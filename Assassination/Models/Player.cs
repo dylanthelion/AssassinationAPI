@@ -18,6 +18,20 @@ namespace Assassination.Models
         [Required]
         [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; }
+        [Required]
+        [MinLength(10)]
+        public string Password { get; set; }
+
+        public Player(string _name, string _email, string _password) : this()
+        {
+            UserName = _name;
+            Email = _email;
+            Password = _password;
+        }
+
+        public Player()
+        {
+        }
     }
 
     public class AssassinationContext : DbContext

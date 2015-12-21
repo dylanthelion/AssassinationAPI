@@ -72,3 +72,4 @@ C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassina
 C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassination.pdb
 C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassination.Migrations.Initial.resources
 C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassination.csproj.GenerateResource.Cache
+C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassination.Migrations.addPassword.resources
