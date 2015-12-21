@@ -108,5 +108,15 @@ namespace Assassination.Areas.HelpPage
 
             return type.FullName;
         }
+
+        public virtual string GetDocumentation(HttpControllerDescriptor descriptor)
+        {
+            return "";
+        }
+
+        public virtual string GetResponseDocumentation(HttpActionDescriptor descriptor)
+        {
+            return "";
+        }
     }
 }

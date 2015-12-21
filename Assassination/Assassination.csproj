@@ -172,6 +172,24 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201512212013080_Initial.cs" />
+    <Compile Include="Migrations\201512212013080_Initial.Designer.cs">
+      <DependentUpon>201512212013080_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\AccountArchive.cs" />
+    <Compile Include="Models\AccountArchiveMap.cs" />
+    <Compile Include="Models\Device.cs" />
+    <Compile Include="Models\Game.cs" />
+    <Compile Include="Models\GameArchive.cs" />
+    <Compile Include="Models\GameArchiveMap.cs" />
+    <Compile Include="Models\Geocoordinate.cs" />
+    <Compile Include="Models\Player.cs" />
+    <Compile Include="Models\PlayerGame.cs" />
+    <Compile Include="Models\PlayerGameArchive.cs" />
+    <Compile Include="Models\Target.cs" />
+    <Compile Include="Models\TargetArchive.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -289,10 +307,14 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201512212013080_Initial.resx">
+      <DependentUpon>201512212013080_Initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
