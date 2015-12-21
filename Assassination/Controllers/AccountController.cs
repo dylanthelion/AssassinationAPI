@@ -145,6 +145,8 @@ namespace Assassination.Controllers
                 }
             }
 
+            db.SaveChanges();
+
             return new HttpResponseMessage()
             {
                 Content = new StringContent(JArray.FromObject(new List<String>() { "Changed!" }).ToString(), Encoding.UTF8, "application/json")
