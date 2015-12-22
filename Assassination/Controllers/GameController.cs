@@ -48,6 +48,22 @@ namespace Assassination.Controllers
                                       where check.PlayerID == playerID
                                       select check).FirstOrDefault();
 
+            int gamesThisWeek = (from archive in db.AllGameArchives
+                                 join pga in db.AllPlayerGameArchives on archive.ID equals pga.GameID
+                                 join pa in db.AllAccountArchives on pga.PlayerID equals pa.ID
+                                 join map in db.AppAccountArchiveMap on pa.ID equals map.AccountArchiveID
+                                 join player in db.AllPlayers on map.PlayerID equals player.ID
+                                 where player.ID == playerID && Math.Abs((DateTime.Now - archive.EndTime).TotalHours) < 168
+                                 select pga).ToList().Count;
+
+            if (gamesThisWeek >= accountDetails.MaxGamesPerWeek)
+            {
+                return new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { String.Format("You are only allowed {0} games per week", accountDetails.MaxGamesPerWeek.ToString()) }).ToString(), Encoding.UTF8, "application/json")
+                };
+            }
+
             if (accountDetails == null)
             {
                 return new HttpResponseMessage()
@@ -80,7 +96,7 @@ namespace Assassination.Controllers
 
             if(game.RadiusInMeters == null)
             {
-                game.RadiusInMeters = 500;
+                g.RadiusInMeters = 500;
             }
             else if (game.RadiusInMeters > accountDetails.MaxRadiusInMeters)
             {
@@ -89,6 +105,19 @@ namespace Assassination.Controllers
             else
             {
                 g.RadiusInMeters = game.RadiusInMeters;
+            }
+
+            if(game.GameLengthInMinutes == null)
+            {
+                g.GameLengthInMinutes = 45;
+            }
+            else if (game.GameLengthInMinutes > accountDetails.MaxGameLengthInMinutes)
+            {
+                g.GameLengthInMinutes = accountDetails.MaxGameLengthInMinutes;
+            }
+            else
+            {
+                g.GameLengthInMinutes = game.GameLengthInMinutes;
             }
 
             if (game.StartTime == null)

@@ -30,8 +30,9 @@ namespace Assassination.Models
         public int MaxGamesPerWeek { get; set; }
         public int Experience { get; set; }
         [DefaultValue(10.0)]
-
         public float MaxKillRadiusInMeters { get; set; }
+        [DefaultValue(45)]
+        public int MaxGameLengthInMinutes { get; set; }
 
         public Account(Player p)
         {

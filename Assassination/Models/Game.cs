@@ -25,6 +25,8 @@ namespace Assassination.Models
         public DateTime StartTime { get; set; }
         [DefaultValue(false)]
         public bool IsActiveGame { get; set; }
+        [DefaultValue(45)]
+        public int GameLengthInMinutes { get; set; }
 
         public Game()
         {

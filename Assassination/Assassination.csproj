@@ -173,10 +173,13 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageAccountController.cs" />
     <Compile Include="Controllers\RallyController.cs" />
+    <Compile Include="Controllers\SetupGameController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ListExtension.cs" />
+    <Compile Include="Helpers\RandomExtension.cs" />
     <Compile Include="Helpers\RegexUtilities.cs" />
     <Compile Include="Helpers\StringExtension.cs" />
     <Compile Include="Migrations\201512212013080_Initial.cs" />
@@ -190,6 +193,10 @@
     <Compile Include="Migrations\201512220123523_addModerator.cs" />
     <Compile Include="Migrations\201512220123523_addModerator.Designer.cs">
       <DependentUpon>201512220123523_addModerator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201512220358375_UpdateGame.cs" />
+    <Compile Include="Migrations\201512220358375_UpdateGame.Designer.cs">
+      <DependentUpon>201512220358375_UpdateGame.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
@@ -335,6 +342,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512220123523_addModerator.resx">
       <DependentUpon>201512220123523_addModerator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512220358375_UpdateGame.resx">
+      <DependentUpon>201512220358375_UpdateGame.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

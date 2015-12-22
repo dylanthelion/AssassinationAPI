@@ -20,10 +20,15 @@ namespace Assassination.Models
         public virtual Player TargetPlayer { get; set; }
         public bool Killed { get; set; }
 
-        public Target(PlayerGame pg, Player p)
+        public Target(PlayerGame pg, Player p) : this()
         {
             PlayerGame = pg;
             TargetPlayer = p;
+        }
+
+        public Target()
+        {
+            Killed = false;
         }
     }
 }
