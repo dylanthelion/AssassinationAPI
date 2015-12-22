@@ -288,9 +288,29 @@ namespace Assassination.Controllers
                 };
             }
 
+            JObject results = new JObject();
+            string moderator = (from check in db.AllPlayers
+                                      join playerGame in db.AllPlayerGames on check.ID equals playerGame.PlayerID
+                                      where playerGame.GameID == gameID && playerGame.IsModerator == true
+                                      select check.UserName).FirstOrDefault();
+            int numberOfPlayers = (from check in db.AllPlayerGames
+                                   where check.GameID == gameID
+                                   select check).ToList().Count;
+            int maxPlayers = checkGame.NumberOfPlayers;
+            string location = checkGame.LocationDescription;
+            if (checkGame.Location != null)
+            {
+                results.Add("Latitude", checkGame.Location.Latitude.ToString());
+                results.Add("Longitude", checkGame.Location.Longitude.ToString());
+            }
+            results.Add("Moderator", moderator);
+            results.Add("Location", location);
+            results.Add("Joined", numberOfPlayers.ToString());
+            results.Add("Needed", maxPlayers.ToString());
+
             return new HttpResponseMessage()
             {
-                Content = new StringContent(JArray.FromObject(new List<Game>() { checkGame }).ToString(), Encoding.UTF8, "application/json")
+                Content = new StringContent(results.ToString(), Encoding.UTF8, "application/json")
             };
         }
     }
