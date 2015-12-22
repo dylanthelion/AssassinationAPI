@@ -64,7 +64,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            if (checkGame.IsActiveGame == false)
+            if (checkGame.IsActiveGame == true)
             {
                 return new HttpResponseMessage()
                 {
