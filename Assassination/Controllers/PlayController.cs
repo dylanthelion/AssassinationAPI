@@ -338,6 +338,12 @@ namespace Assassination.Controllers
                                                     where playerGames.GameID == gameID
                                                     orderby players.ID
                                                     select check).ToArray();
+                Account[] stats = (from check in db.AllAccounts
+                                  join players in db.AllPlayers on check.PlayerID equals players.ID
+                                  join playerGames in db.AllPlayerGames on players.ID equals playerGames.PlayerID
+                                                    where playerGames.GameID == gameID
+                                                    orderby players.ID
+                                                    select check).ToArray();
                 GameArchive ga = new GameArchive();
                 Geocoordinate gameLocation = (from check in db.AllGameCoords
                                               join games in db.AllGames on check.ID equals games.LocationID
@@ -353,6 +359,14 @@ namespace Assassination.Controllers
                 {
                     PlayerGameArchive pga = new PlayerGameArchive(allAccounts[i], ga, allPlayerGames[i]);
                     db.AllPlayerGameArchives.Add(pga);
+                    if (allPlayerGames[i].Alive)
+                    {
+                        stats[i].Experience += 3;
+                    }
+                    else
+                    {
+                        stats[i].Experience += 1;
+                    }
                     foreach (Target t in allKills)
                     {
                         if (t.PlayerGameID == allPlayerGames[i].ID)
@@ -364,11 +378,13 @@ namespace Assassination.Controllers
                                                     select check).FirstOrDefault();
                             TargetArchive ta = new TargetArchive(pga, killed, t);
                             db.AllTargetArchives.Add(ta);
+                            stats[i].Experience += 1;
                         }
                     }
 
                     db.AllPlayerGames.Remove(allPlayerGames[i]);
                     db.Entry(allPlayerGames[i]).State = EntityState.Deleted;
+                    db.Entry(stats[i]).State = EntityState.Modified;
                 }
 
                 foreach (Target t in allKills)
