@@ -19,16 +19,21 @@ namespace Assassination.Models
         public float Longitude { get; set; }
         public float Altitude { get; set; }
         public bool Alive { get; set; }
+        public bool IsModerator { get; set; }
 
         [ForeignKey("PlayerID")]
         public virtual Player Player { get; set; }
         [ForeignKey("GameID")]
         public virtual Game Game { get; set; }
 
-        public PlayerGame(Player p, Game g)
+        public PlayerGame(Player p, Game g) : this()
         {
             Player = p;
             Game = g;
+        }
+
+        public PlayerGame()
+        {
         }
     }
 }

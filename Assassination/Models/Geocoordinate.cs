@@ -16,5 +16,15 @@ namespace Assassination.Models
         public float Latitude { get; set; }
         public float Longitude { get; set; }
         public float Altitude { get; set; }
+
+        public Geocoordinate()
+        {
+        }
+
+        public Geocoordinate(float lat, float longi) : this()
+        {
+            Latitude = lat;
+            Longitude = longi;
+        }
     }
 }

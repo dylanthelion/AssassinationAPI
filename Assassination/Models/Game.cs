@@ -23,5 +23,17 @@ namespace Assassination.Models
         public float RadiusInMeters { get; set; }
         [Column(TypeName = "datetime2")]
         public DateTime StartTime { get; set; }
+        [DefaultValue(false)]
+        public bool IsActiveGame { get; set; }
+
+        public Game()
+        {
+            IsActiveGame = false;
+        }
+
+        public Game(string location) : this()
+        {
+            LocationDescription = location;
+        }
     }
 }
