@@ -83,7 +83,7 @@ namespace Assassination.Controllers
                 g.Location = coord;
             }
 
-            if (game.NumberOfPlayers == null)
+            if (game.NumberOfPlayers == 0)
             {
                 g.NumberOfPlayers = 5;
             }
@@ -94,7 +94,7 @@ namespace Assassination.Controllers
                 g.NumberOfPlayers = game.NumberOfPlayers;
             }
 
-            if(game.RadiusInMeters == null)
+            if(game.RadiusInMeters == 0)
             {
                 g.RadiusInMeters = 500;
             }
@@ -107,7 +107,7 @@ namespace Assassination.Controllers
                 g.RadiusInMeters = game.RadiusInMeters;
             }
 
-            if(game.GameLengthInMinutes == null)
+            if(game.GameLengthInMinutes == 0)
             {
                 g.GameLengthInMinutes = 45;
             }
@@ -118,6 +118,14 @@ namespace Assassination.Controllers
             else
             {
                 g.GameLengthInMinutes = game.GameLengthInMinutes;
+            }
+
+            if (game.GameType == 0)
+            {
+                g.GameType = GameType.IndividualTargets;
+            }
+            else {
+                g.GameType = game.GameType;
             }
 
             if (game.StartTime == null)
@@ -203,7 +211,7 @@ namespace Assassination.Controllers
                 checkGame.Location = coord;
             }
 
-            if (game.NumberOfPlayers == null)
+            if (game.NumberOfPlayers == 0)
             {
             }
             else if (game.NumberOfPlayers > accountDetails.MaxPlayers)
@@ -215,7 +223,7 @@ namespace Assassination.Controllers
                 checkGame.NumberOfPlayers = game.NumberOfPlayers;
             }
 
-            if (game.RadiusInMeters == null)
+            if (game.RadiusInMeters == 0)
             {
             }
             else if (game.RadiusInMeters > accountDetails.MaxRadiusInMeters)
@@ -225,6 +233,11 @@ namespace Assassination.Controllers
             else
             {
                 checkGame.RadiusInMeters = game.RadiusInMeters;
+            }
+
+            if (game.GameType != 0)
+            {
+                checkGame.GameType = game.GameType;
             }
 
             if (game.StartTime == null)
@@ -327,6 +340,10 @@ namespace Assassination.Controllers
                                    select check).ToList().Count;
             int maxPlayers = checkGame.NumberOfPlayers;
             string location = checkGame.LocationDescription;
+            if (checkGame.GameType != 0)
+            {
+                results.Add("Game Type", checkGame.GameType.ToString());
+            }
             if (checkGame.Location != null)
             {
                 results.Add("Latitude", checkGame.Location.Latitude.ToString());

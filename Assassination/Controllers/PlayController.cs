@@ -252,7 +252,7 @@ namespace Assassination.Controllers
                                  where check.GameID == gameID && check.PlayerID == checkTarget.TargetID
                                  select new { lat = check.Latitude, longi = check.Longitude, alt = check.Altitude }).FirstOrDefault();
             Geocoordinate targetCoords = new Geocoordinate(targetLocation.lat, targetLocation.longi);
-            if (targetLocation.alt == 0.0 || coords.Altitude == null)
+            if (targetLocation.alt == 0.0 || coords.Altitude == 0.0)
             {
                 targetCoords.Altitude = 0;
                 coords.Altitude = 0;

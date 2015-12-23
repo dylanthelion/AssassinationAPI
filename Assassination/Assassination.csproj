@@ -176,6 +176,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\JoinFreeForAllGameController.cs" />
     <Compile Include="Controllers\JoinIndividualTargetsGameController.cs" />
+    <Compile Include="Controllers\JoinTeamGameController.cs" />
     <Compile Include="Controllers\ManageAccountController.cs" />
     <Compile Include="Controllers\PlayController.cs" />
     <Compile Include="Controllers\RallyController.cs" />
