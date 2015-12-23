@@ -27,6 +27,7 @@ namespace Assassination.Models
         public bool IsActiveGame { get; set; }
         [DefaultValue(45)]
         public int GameLengthInMinutes { get; set; }
+        public GameType GameType { get; set; }
 
         public Game()
         {
@@ -37,5 +38,12 @@ namespace Assassination.Models
         {
             LocationDescription = location;
         }
+    }
+
+    public enum GameType
+    {
+        FreeForAll,
+        IndividualTargets,
+        Team
     }
 }

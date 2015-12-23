@@ -96,6 +96,8 @@ namespace Assassination.Controllers
                     Target t = new Target(players[i], targetPlayer);
                     db.AllTargets.Add(t);
                 }
+                checkGame.GameType = GameType.IndividualTargets;
+                db.Entry(checkGame).State = EntityState.Modified;
             }
             else
             {
@@ -121,6 +123,8 @@ namespace Assassination.Controllers
                         }
                     }
                 }
+                checkGame.GameType = GameType.Team;
+                db.Entry(checkGame).State = EntityState.Modified;
             }
 
             checkGame.IsActiveGame = true;

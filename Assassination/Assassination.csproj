@@ -175,6 +175,7 @@
     <Compile Include="Controllers\GameController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\JoinFreeForAllGameController.cs" />
+    <Compile Include="Controllers\JoinIndividualTargetsGameController.cs" />
     <Compile Include="Controllers\ManageAccountController.cs" />
     <Compile Include="Controllers\PlayController.cs" />
     <Compile Include="Controllers\RallyController.cs" />
@@ -202,6 +203,10 @@
     <Compile Include="Migrations\201512220358375_UpdateGame.cs" />
     <Compile Include="Migrations\201512220358375_UpdateGame.Designer.cs">
       <DependentUpon>201512220358375_UpdateGame.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201512230717165_GameType.cs" />
+    <Compile Include="Migrations\201512230717165_GameType.Designer.cs">
+      <DependentUpon>201512230717165_GameType.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
@@ -353,6 +358,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512220358375_UpdateGame.resx">
       <DependentUpon>201512220358375_UpdateGame.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512230717165_GameType.resx">
+      <DependentUpon>201512230717165_GameType.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
