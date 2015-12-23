@@ -39,15 +39,6 @@ namespace Assassination.WebsocketHandlers
                  return;
              }
 
-             foreach(String s in data)
-             {
-                 double n;
-                 if(!double.TryParse(s, out n))
-                 {
-                     return;
-                 }
-             }
-
              if(data.Length == 2)
              {
                  int n;
@@ -90,5 +81,15 @@ namespace Assassination.WebsocketHandlers
                  clients[int.Parse(data[0])].Broadcast(locations[int.Parse(data[0])].ToString());
              }
        }
+
+         public override void OnClose()
+         {
+             base.OnClose();
+             clients[gameID].Remove(this);
+             if (clients[gameID].Count < 1)
+             {
+                 clients.Remove(gameID);
+             }
+         }
     }
 }
