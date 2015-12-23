@@ -12,9 +12,8 @@ namespace Assassination.WebsocketHandlers
         public int gameID { get; set; }
         public string playerName { get; set; }
         public string targetName { get; set; }
+        // <gameid<playername<targetname, clients>>>
         private static Dictionary<int, Dictionary<string, Dictionary<string, WebSocketCollection>>> targets = new Dictionary<int, Dictionary<string, Dictionary<string, WebSocketCollection>>>();
-        private static Dictionary<int, Dictionary<int, double[]>> locations = new Dictionary<int, Dictionary<int, double[]>>();
-        public string userName { get; set; }
 
         public void setUpGroup()
         {
