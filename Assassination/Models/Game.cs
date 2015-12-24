@@ -42,6 +42,7 @@ namespace Assassination.Models
 
     public enum GameType
     {
+        Default,
         FreeForAll,
         IndividualTargets,
         Team
