@@ -1,4 +1,5 @@
-﻿using Assassination.Models;
+﻿using Assassination.Helpers;
+using Assassination.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,19 @@ namespace Assassination.Controllers
                                   where check.UUID == UUID
                                   select check).FirstOrDefault();
 
-            if (checkPlayer == null)
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidatePlayerInformationWithUserName(userName, password);
+            if(validator.Item1)
+            {
+                return validator.Item2;
+            }
+
+            Tuple<bool, HttpResponseMessage> deviceValidator = RequestValidators.CheckForUniqueDevice(UUID);
+            if (deviceValidator.Item1)
+            {
+                return deviceValidator.Item2;
+            }
+
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -47,7 +60,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Device is already attached to an account" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Device d = new Device(checkPlayer, UUID);
             db.AllDevices.Add(d);
@@ -62,13 +75,19 @@ namespace Assassination.Controllers
         [HttpDelete]
         public HttpResponseMessage RemoveDevice(int playerID, string password, string UUID)
         {
-            Player checkPlayer = db.AllPlayers.Find(playerID);
+            //Player checkPlayer = db.AllPlayers.Find(playerID);
 
             Device checkDevice = (from check in db.AllDevices
                                   where check.UUID == UUID
                                   select check).FirstOrDefault();
 
-            if (checkPlayer == null)
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateDevice(playerID, password, UUID);
+            if (validator.Item1)
+            {
+                return validator.Item2;
+            }
+
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -90,7 +109,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid device ID" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             db.AllDevices.Remove(checkDevice);
             db.Entry(checkDevice).State = EntityState.Deleted;

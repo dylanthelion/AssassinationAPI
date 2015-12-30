@@ -51,12 +51,34 @@ namespace Assassination.Helpers
                 });
             }*/
 
-            Device checkForUniqueDevice = (from check in db.AllDevices
+            Tuple<bool, HttpResponseMessage> deviceValidator = CheckForUniqueDevice(UUID);
+            if (deviceValidator.Item1)
+            {
+                return deviceValidator;
+            }
+
+            /*Device checkForUniqueDevice = (from check in db.AllDevices
                                            where check.UUID == UUID
                                            select check).FirstOrDefault();
             if (checkForUniqueDevice != null)
             {
                 return new Tuple<bool,HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Device already has an account attached to it" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }*/
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public static Tuple<bool, HttpResponseMessage> CheckForUniqueDevice(string UUID)
+        {
+            Device checkForUniqueDevice = (from check in db.AllDevices
+                                           where check.UUID == UUID
+                                           select check).FirstOrDefault();
+            if (checkForUniqueDevice != null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Device already has an account attached to it" }).ToString(), Encoding.UTF8, "application/json")
                 });
@@ -138,6 +160,54 @@ namespace Assassination.Helpers
                 return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid email" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public static Tuple<bool, HttpResponseMessage> ValidatePlayerInformationWithUserName(string name, string password)
+        {
+            string checkPassword = (from check in db.AllPlayers
+                                    where check.UserName == name
+                                    select check.Password).FirstOrDefault();
+
+            if (checkPassword == null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid user ID" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            if (checkPassword != password)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public static Tuple<bool, HttpResponseMessage> ValidateDevice(int playerID, string password, string UUID)
+        {
+            Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
+            if (validator.Item1)
+            {
+                return validator;
+            }
+
+            Device checkDevice = (from check in db.AllDevices
+                                  where check.UUID == UUID && check.PlayerID == playerID
+                                  select check).FirstOrDefault();
+
+            if (checkDevice == null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid device" }).ToString(), Encoding.UTF8, "application/json")
                 });
             }
 
