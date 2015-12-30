@@ -1,4 +1,5 @@
-﻿using Assassination.Models;
+﻿using Assassination.Helpers;
+using Assassination.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,15 @@ namespace Assassination.Controllers
                 };
             }
 
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateAccount(playerID, password);
+            if (validator.Item1)
+            {
+                return validator.Item2;
+            }
+
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -43,7 +50,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Account accountDetails = (from check in db.AllAccounts
                                       where check.PlayerID == playerID
@@ -64,8 +71,8 @@ namespace Assassination.Controllers
 
             gamesThisWeek += currentGames;
 
-            Debug.WriteLine("Games this week: " + gamesThisWeek.ToString());
-            Debug.WriteLine("Max Games: " + accountDetails.MaxGamesPerWeek.ToString());
+            //Debug.WriteLine("Games this week: " + gamesThisWeek.ToString());
+            //Debug.WriteLine("Max Games: " + accountDetails.MaxGamesPerWeek.ToString());
 
             if (gamesThisWeek >= accountDetails.MaxGamesPerWeek)
             {
@@ -75,13 +82,13 @@ namespace Assassination.Controllers
                 };
             }
 
-            if (accountDetails == null)
+            /*if (accountDetails == null)
             {
                 return new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Something went wrong. You don't have an account set up." }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Game g = new Game(game.LocationDescription);
 
@@ -174,11 +181,17 @@ namespace Assassination.Controllers
                 };
             }
 
-            Player checkPlayer = db.AllPlayers.Find(playerID);
-            Debug.WriteLine("ID: " + gameID);
+            //Player checkPlayer = db.AllPlayers.Find(playerID);
+            //Debug.WriteLine("ID: " + gameID);
             Game checkGame = db.AllGames.Find(gameID);
 
-            if (checkPlayer == null)
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateModerator(playerID, password, gameID);
+            if (validator.Item1)
+            {
+                return validator.Item2;
+            }
+
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -192,13 +205,13 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Account accountDetails = (from check in db.AllAccounts
                                       where check.PlayerID == playerID
                                       select check).FirstOrDefault();
 
-            if (accountDetails == null)
+            /*if (accountDetails == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -212,7 +225,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Geocoordinate coord = null;
 
@@ -285,7 +298,13 @@ namespace Assassination.Controllers
             Game checkGame = db.AllGames.Find(gameID);
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateModerator(playerID, password, gameID);
+            if (validator.Item1)
+            {
+                return validator.Item2;
+            }
+
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -318,7 +337,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are not the moderator of that game" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             List<PlayerGame> allPG = (from check in db.AllPlayerGames
                                       where check.GameID == gameID
@@ -344,12 +363,18 @@ namespace Assassination.Controllers
         public HttpResponseMessage GetGame(int gameID)
         {
             Game checkGame = db.AllGames.Find(gameID);
-            if (checkGame == null)
+            /*if (checkGame == null)
             {
                 return new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
                 };
+            }*/
+
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateGame(gameID);
+            if (validator.Item1)
+            {
+                return validator.Item2;
             }
 
             JObject results = new JObject();

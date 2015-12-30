@@ -213,5 +213,70 @@ namespace Assassination.Helpers
 
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
+
+        public static Tuple<bool, HttpResponseMessage> ValidateAccount(int playerID, string password)
+        {
+            Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
+            if (validator.Item1)
+            {
+                return validator;
+            }
+
+            Account checkAccount = (from check in db.AllAccounts
+                                    where check.PlayerID == playerID
+                                    select check).FirstOrDefault();
+
+            if (checkAccount == null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "You do not have an account set up" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public static Tuple<bool, HttpResponseMessage> ValidateModerator(int playerID, string password, int gameID)
+        {
+            Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
+            if (validator.Item1)
+            {
+                return validator;
+            }
+
+            Tuple<bool, HttpResponseMessage> gameValidator = ValidateGame(gameID);
+            if (gameValidator.Item1)
+            {
+                return gameValidator;
+            }
+
+            bool isModerator = (from check in db.AllPlayerGames
+                                where check.PlayerID == playerID && check.GameID == gameID
+                                select check.IsModerator).FirstOrDefault();
+            if (!isModerator)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not the moderator of that game" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public static Tuple<bool, HttpResponseMessage> ValidateGame(int gameID)
+        {
+            Game checkGame = db.AllGames.Find(gameID);
+            if (checkGame == null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
     }
 }
