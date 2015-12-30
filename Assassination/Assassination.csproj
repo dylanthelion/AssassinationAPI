@@ -186,6 +186,7 @@
     <Compile Include="Helpers\ListExtension.cs" />
     <Compile Include="Helpers\RandomExtension.cs" />
     <Compile Include="Helpers\RegexUtilities.cs" />
+    <Compile Include="Helpers\RequestValidators.cs" />
     <Compile Include="Helpers\StringExtension.cs" />
     <Compile Include="Migrations\201512212013080_Initial.cs" />
     <Compile Include="Migrations\201512212013080_Initial.Designer.cs">

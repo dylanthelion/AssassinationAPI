@@ -1,4 +1,5 @@
-﻿using Assassination.Models;
+﻿using Assassination.Helpers;
+using Assassination.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            Player checkForUniqueName = (from check in db.AllPlayers
+            /*Player checkForUniqueName = (from check in db.AllPlayers
                                          where check.UserName == player.UserName
                                          select check).FirstOrDefault();
             if (checkForUniqueName != null)
@@ -59,9 +60,14 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Device already has an account attached to it" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
-            
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateNewPlayer(player.UserName, player.Email, UUID);
+
+            if (validator.Item1)
+            {
+                return validator.Item2;
+            }
 
             Player p = new Player(player.UserName, player.Email, player.Password);
             Account a = new Account(p);
@@ -100,7 +106,7 @@ namespace Assassination.Controllers
             Debug.WriteLine("Name: " + player.UserName);
 
             Player checkPlayer = db.AllPlayers.Find(id);
-            if (checkPlayer == null)
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -114,11 +120,22 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
                 };
+            }*/
+
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidatePlayerInformation(id, player.Password);
+            if (validator.Item1)
+            {
+                return validator.Item2;
             }
 
             if (checkPlayer.UserName != player.UserName)
             {
-                Player checkForUniqueName = (from check in db.AllPlayers
+                Tuple<bool, HttpResponseMessage> nameValidator = RequestValidators.CheckForUniqueName(player.UserName);
+                if (nameValidator.Item1)
+                {
+                    return nameValidator.Item2;
+                }
+                /*Player checkForUniqueName = (from check in db.AllPlayers
                                              where check.UserName == player.UserName
                                              select check).FirstOrDefault();
                 if (checkForUniqueName != null)
@@ -127,7 +144,7 @@ namespace Assassination.Controllers
                     {
                         Content = new StringContent(JArray.FromObject(new List<String>() { "Username already taken" }).ToString(), Encoding.UTF8, "application/json")
                     };
-                }
+                }*/
                 else
                 {
                     checkPlayer.UserName = player.UserName;
@@ -137,7 +154,12 @@ namespace Assassination.Controllers
 
             if (checkPlayer.Email != player.Email)
             {
-                Player checkForUniqueEmail = (from check in db.AllPlayers
+                Tuple<bool, HttpResponseMessage> emailValidator = RequestValidators.CheckForUniqueEmail(player.Email);
+                if (emailValidator.Item1)
+                {
+                    return emailValidator.Item2;
+                }
+                /*Player checkForUniqueEmail = (from check in db.AllPlayers
                                               where check.Email == player.Email
                                               select check).FirstOrDefault();
                 if (checkForUniqueEmail != null)
@@ -146,7 +168,7 @@ namespace Assassination.Controllers
                     {
                         Content = new StringContent(JArray.FromObject(new List<String>() { "Email address already taken" }).ToString(), Encoding.UTF8, "application/json")
                     };
-                }
+                }*/
                 else
                 {
                     checkPlayer.Email = player.Email;
@@ -165,9 +187,16 @@ namespace Assassination.Controllers
         [System.Web.Http.HttpDelete]
         public HttpResponseMessage DeletePlayer(int playerID, string email, string password)
         {
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidatePlayerInformationWithEmail(playerID, password, email);
+            if (validator.Item1)
+            {
+                return validator.Item2;
+            }
+
+
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -189,7 +218,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid pasword" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Account a = (from check in db.AllAccounts
                          where check.PlayerID == playerID
@@ -215,34 +244,5 @@ namespace Assassination.Controllers
                 Content = new StringContent(JArray.FromObject(new List<String>() { "Deleted!" }).ToString(), Encoding.UTF8, "application/json")
             };
         }
-
-        [System.Web.Http.HttpGet]
-        public HttpResponseMessage AllPlayers()
-        {
-            List<Player> allPlayers = db.AllPlayers.ToList();
-            return new HttpResponseMessage()
-            {
-                Content = new StringContent(JArray.FromObject(allPlayers).ToString(), Encoding.UTF8, "application/json")
-            };
-        }
-
-        /*[System.Web.Http.HttpGet]
-        public HttpResponseMessage GetPlayer(int id)
-        {
-            Player checkPlayer = db.AllPlayers.Find(id);
-
-            if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid user ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            return new HttpResponseMessage()
-            {
-                Content = new StringContent(JArray.FromObject(new List<Player>() { checkPlayer }).ToString(), Encoding.UTF8, "application/json")
-            };
-        }*/
     }
 }
