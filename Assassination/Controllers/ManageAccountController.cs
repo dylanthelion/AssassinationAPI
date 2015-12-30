@@ -3,6 +3,7 @@ using Assassination.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Linq;
 using System.Net.Http;
@@ -46,7 +47,7 @@ namespace Assassination.Controllers
             JObject results = new JObject();
             results.Add("ID", checkPlayer.ID.ToString());
             results.Add("UserName", checkPlayer.UserName);
-            results.Add("Devices", JArray.FromObject(devices.ToString()));
+            results.Add("Devices", JArray.FromObject(devices).ToString());
 
             return new HttpResponseMessage()
             {
@@ -95,7 +96,18 @@ namespace Assassination.Controllers
             {
                 return new HttpResponseMessage()
                 {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid email" }).ToString(), Encoding.UTF8, "application/json")
+                };
+            }
+
+            EmailAddressAttribute attr = new EmailAddressAttribute();
+            bool isValid = attr.IsValid(newEmail);
+
+            if (!isValid)
+            {
+                return new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "New email is invalid" }).ToString(), Encoding.UTF8, "application/json")
                 };
             }
 
@@ -149,7 +161,7 @@ namespace Assassination.Controllers
             {
                 return new HttpResponseMessage()
                 {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid email" }).ToString(), Encoding.UTF8, "application/json")
                 };
             }
 

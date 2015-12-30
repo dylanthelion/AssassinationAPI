@@ -34,9 +34,19 @@ namespace Assassination.Models
         [DefaultValue(45)]
         public int MaxGameLengthInMinutes { get; set; }
 
-        public Account(Player p)
+        public Account(Player p) : this()
         {
             Player = p;
+        }
+
+        public Account()
+        {
+            MaxGameLengthInMinutes = 45;
+            MaxGamesPerWeek = 3;
+            MaxKillRadiusInMeters = 10;
+            MaxPlayers = 5;
+            MaxRadiusInMeters = 1500;
+            MaxTeams = 2;
         }
     }
 }

@@ -3,11 +3,13 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Web;
 using System.Web.Http;
+using System.Web.Mvc;
 
 namespace Assassination.Controllers
 {
@@ -15,14 +17,14 @@ namespace Assassination.Controllers
     {
         private AssassinationContext db = new AssassinationContext();
 
-        [HttpPost]
-        public HttpResponseMessage CreateUser([FromBody] Player player, string UUID)
+        [System.Web.Http.HttpPost]
+        public HttpResponseMessage CreateUser(string UUID, [FromBody] Player player)
         {
             if (!ModelState.IsValid)
             {
                 return new HttpResponseMessage()
                 {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid user information" }).ToString(), Encoding.UTF8, "application/json")
+                    Content = new StringContent(JArray.FromObject(new List<string>() { "Invalid player object. Make sure password is at least 10 characters long, and that email address is valid, and that player name is present." }).ToString(), Encoding.UTF8, "application/json")
                 };
             }
 
@@ -59,6 +61,8 @@ namespace Assassination.Controllers
                 };
             }
 
+            
+
             Player p = new Player(player.UserName, player.Email, player.Password);
             Account a = new Account(p);
             Device d = new Device(p, UUID);
@@ -73,14 +77,16 @@ namespace Assassination.Controllers
 
             db.SaveChanges();
 
+            db.Entry(p).GetDatabaseValues();
+
                 return new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { String.Format("User ID: {0}", p.ID.ToString())  }).ToString(), Encoding.UTF8, "application/json")
                 };
         }
 
-        [HttpPut]
-        public HttpResponseMessage EditUser([FromBody] Player player)
+        [System.Web.Http.HttpPut]
+        public HttpResponseMessage EditUser([FromBody] Player player, int id)
         {
             if (!ModelState.IsValid)
             {
@@ -90,7 +96,10 @@ namespace Assassination.Controllers
                 };
             }
 
-            Player checkPlayer = db.AllPlayers.Find(player.ID);
+            Debug.WriteLine("ID: " + id.ToString());
+            Debug.WriteLine("Name: " + player.UserName);
+
+            Player checkPlayer = db.AllPlayers.Find(id);
             if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
@@ -153,7 +162,7 @@ namespace Assassination.Controllers
             };
         }
 
-        [HttpDelete]
+        [System.Web.Http.HttpDelete]
         public HttpResponseMessage DeletePlayer(int playerID, string email, string password)
         {
             Player checkPlayer = db.AllPlayers.Find(playerID);
@@ -207,7 +216,17 @@ namespace Assassination.Controllers
             };
         }
 
-        [HttpGet]
+        [System.Web.Http.HttpGet]
+        public HttpResponseMessage AllPlayers()
+        {
+            List<Player> allPlayers = db.AllPlayers.ToList();
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JArray.FromObject(allPlayers).ToString(), Encoding.UTF8, "application/json")
+            };
+        }
+
+        /*[System.Web.Http.HttpGet]
         public HttpResponseMessage GetPlayer(int id)
         {
             Player checkPlayer = db.AllPlayers.Find(id);
@@ -224,6 +243,6 @@ namespace Assassination.Controllers
             {
                 Content = new StringContent(JArray.FromObject(new List<Player>() { checkPlayer }).ToString(), Encoding.UTF8, "application/json")
             };
-        }
+        }*/
     }
 }

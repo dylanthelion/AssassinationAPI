@@ -72,6 +72,28 @@ namespace Assassination.Controllers
                 };
             }
 
+            PlayerGame checkIfInGame = (from check in db.AllPlayerGames
+                                        where check.PlayerID == playerID && check.GameID == gameID
+                                        select check).FirstOrDefault();
+            if (checkIfInGame != null)
+            {
+                return new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are already in that game" }).ToString(), Encoding.UTF8, "application/json")
+                };
+            }
+
+            int playersInGame = (from check in db.AllPlayerGames
+                                 where check.GameID == gameID
+                                 select check).ToList().Count;
+            if (playersInGame >= checkGame.NumberOfPlayers)
+            {
+                return new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game is full" }).ToString(), Encoding.UTF8, "application/json")
+                };
+            }
+
             PlayerGame pg = new PlayerGame(checkPlayer, checkGame);
             db.AllPlayerGames.Add(pg);
             db.SaveChanges();
@@ -114,7 +136,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            if (checkGame.IsActiveGame == false)
+            if (checkGame.IsActiveGame)
             {
                 return new HttpResponseMessage()
                 {

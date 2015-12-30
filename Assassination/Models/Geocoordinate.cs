@@ -26,5 +26,13 @@ namespace Assassination.Models
             Latitude = lat;
             Longitude = longi;
         }
+
+        public Geocoordinate(float lat, float longi, float alt)
+            : this()
+        {
+            Latitude = lat;
+            Longitude = longi;
+            Altitude = alt;
+        }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Assassination.Models;
+using Assassination.WebsocketHandlers;
+using Microsoft.Web.WebSockets;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -248,19 +250,82 @@ namespace Assassination.Controllers
                 };
             }
 
+            Geocoordinate targetCoords = null;
+
+            if (checkGame.GameType == GameType.FreeForAll)
+            {
+                FreeForAllGameWebSocketHandler handler = new FreeForAllGameWebSocketHandler();
+                Tuple<bool, Geocoordinate> locationResults = handler.GetPlayerLocation(gameID, targetName);
+                if (locationResults.Item1)
+                {
+                    targetCoords = locationResults.Item2;
+                }
+            }
+            else if (checkGame.GameType == GameType.IndividualTargets)
+            {
+                IndividualTargetsGameWebSocketHandler handler = new IndividualTargetsGameWebSocketHandler();
+                Tuple<bool, Geocoordinate> locationResults = handler.GetPlayerLocation(gameID, targetName);
+                if (locationResults.Item1)
+                {
+                    targetCoords = locationResults.Item2;
+                }
+            }
+            else if (checkGame.GameType == GameType.Team)
+            {
+                TeamGameWebSocketHandler handler = new TeamGameWebSocketHandler();
+                string killerTeam = checkIfInGame.TeamName;
+                string targetTeam = (from check in db.AllPlayerGames
+                                     where check.PlayerID == checkTarget.TargetID && check.GameID == gameID
+                                     select check.TeamName).FirstOrDefault();
+
+                if (killerTeam == null || targetTeam == null)
+                {
+                    return new HttpResponseMessage()
+                    {
+                        Content = new StringContent(JArray.FromObject(new List<String>() { "Something went wrong. Those players don't have a team assigned." }).ToString(), Encoding.UTF8, "application/json")
+                    };
+                }
+                else if (killerTeam == targetTeam)
+                {
+                    return new HttpResponseMessage()
+                    {
+                        Content = new StringContent(JArray.FromObject(new List<String>() { "You are on the same team!." }).ToString(), Encoding.UTF8, "application/json")
+                    };
+                }
+
+                Tuple<bool, Geocoordinate> locationResults = handler.GetPlayerLocation(gameID, targetName, targetTeam);
+                if (locationResults.Item1)
+                {
+                    targetCoords = locationResults.Item2;
+                }
+            }
+
+            else
+            {
+                return new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Something went wrong. That game has not been set up." }).ToString(), Encoding.UTF8, "application/json")
+                };
+            }
+
+            if (targetCoords == null)
+            {
+                return new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Something went wrong. That player is not in that game." }).ToString(), Encoding.UTF8, "application/json")
+                };
+            }
+
             var targetLocation = (from check in db.AllPlayerGames
                                  where check.GameID == gameID && check.PlayerID == checkTarget.TargetID
                                  select new { lat = check.Latitude, longi = check.Longitude, alt = check.Altitude }).FirstOrDefault();
-            Geocoordinate targetCoords = new Geocoordinate(targetLocation.lat, targetLocation.longi);
-            if (targetLocation.alt == 0.0 || coords.Altitude == 0.0)
+            //Geocoordinate targetCoords = new Geocoordinate(targetLocation.lat, targetLocation.longi);
+            if (targetCoords.Altitude == 0 || coords.Altitude == 0.0)
             {
                 targetCoords.Altitude = 0;
                 coords.Altitude = 0;
             }
-            else
-            {
-                targetCoords.Altitude = targetLocation.alt;
-            }
+
             float killDistance = (from check in db.AllAccounts
                                   where check.PlayerID == playerID
                                   select check.MaxKillRadiusInMeters).FirstOrDefault();
@@ -294,8 +359,9 @@ namespace Assassination.Controllers
                     db.Entry(t).State = EntityState.Modified;
                 }
             }
+
             bool endGame = false;
-            if (checkIfInGame.TeamName == null)
+            if (checkGame.GameType != GameType.Team)
             {
                 int playersLeft = (from check in db.AllPlayerGames
                                    where check.GameID == gameID && check.Alive == true

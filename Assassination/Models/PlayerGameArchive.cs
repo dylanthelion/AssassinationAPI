@@ -23,7 +23,7 @@ namespace Assassination.Models
         [ForeignKey("GameID")]
         public virtual GameArchive Game { get; set; }
 
-        public PlayerGameArchive(AccountArchive aa, GameArchive ga, PlayerGame pg)
+        public PlayerGameArchive(AccountArchive aa, GameArchive ga, PlayerGame pg) : this()
         {
             Player = aa;
             Game = ga;
@@ -32,6 +32,10 @@ namespace Assassination.Models
                 TeamName = pg.TeamName;
             }
             Alive = pg.Alive;
+        }
+
+        public PlayerGameArchive()
+        {
         }
     }
 }

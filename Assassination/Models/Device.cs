@@ -18,10 +18,14 @@ namespace Assassination.Models
         [ForeignKey("PlayerID")]
         public virtual Player Owner { get; private set; }
 
-        public Device(Player p, string id)
+        public Device(Player p, string id) : this()
         {
             Owner = p;
             UUID = id;
+        }
+
+        public Device()
+        {
         }
     }
 }

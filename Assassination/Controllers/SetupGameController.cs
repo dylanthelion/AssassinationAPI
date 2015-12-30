@@ -46,6 +46,14 @@ namespace Assassination.Controllers
                 };
             }
 
+            if (checkGame.GameType == GameType.Default)
+            {
+                return new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Please choose a game type(Team, Free For All, etc...), before setting up the game." }).ToString(), Encoding.UTF8, "application/json")
+                };
+            }
+
             bool checkPG = (from check in db.AllPlayerGames
                             where check.PlayerID == playerID && check.GameID == gameID
                             select check.IsModerator).FirstOrDefault();
@@ -74,33 +82,67 @@ namespace Assassination.Controllers
 
             if (teams.Count == 0)
             {
-                PlayerGame[] playersCopy = new PlayerGame[players.Length];
-                players.CopyTo(playersCopy, 0);
-                bool ready = false;
-                while (!ready)
+                if (checkGame.GameType == GameType.IndividualTargets)
                 {
-                    ready = true;
-                    new Random().Shuffle(playersCopy);
+                    PlayerGame[] playersCopy = new PlayerGame[players.Length];
+                    players.CopyTo(playersCopy, 0);
+                    bool ready = false;
+                    while (!ready)
+                    {
+                        ready = true;
+                        new Random().Shuffle(playersCopy);
+                        for (int i = 0; i < players.Length; i++)
+                        {
+                            if (players[i].PlayerID == playersCopy[i].PlayerID)
+                            {
+                                ready = false;
+                            }
+                        }
+                    }
+
                     for (int i = 0; i < players.Length; i++)
                     {
-                        if (players[i].PlayerID == playersCopy[i].PlayerID)
+                        Player targetPlayer = db.AllPlayers.Find(playersCopy[i].PlayerID);
+                        Target t = new Target(players[i], targetPlayer);
+                        db.AllTargets.Add(t);
+                    }
+                }
+                else if (checkGame.GameType == GameType.FreeForAll)
+                {
+                    PlayerGame[] playersCopy = new PlayerGame[players.Length];
+                    players.CopyTo(playersCopy, 0);
+
+                    for(int i = 0; i < players.Length; i++)
+                    {
+                        for (int j = 0; j < players.Length; j++)
                         {
-                            ready = false;
+                            if (i != j)
+                            {
+                                Player targetPlayer = db.AllPlayers.Find(playersCopy[j].PlayerID);
+                                Target t = new Target(players[i], targetPlayer);
+                                db.AllTargets.Add(t);
+                            }
                         }
                     }
                 }
-
-                for (int i = 0; i < players.Length; i++)
+                else
                 {
-                    Player targetPlayer = db.AllPlayers.Find(playersCopy[i].PlayerID);
-                    Target t = new Target(players[i], targetPlayer);
-                    db.AllTargets.Add(t);
+                    return new HttpResponseMessage()
+                    {
+                        Content = new StringContent(JArray.FromObject(new List<String>() { "Game type does not match number of teams chosen. Please choose relevant team names, or change the game type." }).ToString(), Encoding.UTF8, "application/json")
+                    };
                 }
-                checkGame.GameType = GameType.IndividualTargets;
-                db.Entry(checkGame).State = EntityState.Modified;
             }
             else
             {
+                if (checkGame.GameType != GameType.Team)
+                {
+                    return new HttpResponseMessage()
+                    {
+                        Content = new StringContent(JArray.FromObject(new List<String>() { "Game type does not match number of teams chosen. Please  change the game type." }).ToString(), Encoding.UTF8, "application/json")
+                    };
+                }
+
                 string currentTeam = teams[0];
                 
                 new Random().Shuffle(players);

@@ -56,6 +56,14 @@ namespace Assassination.Controllers
                 };
             }
 
+            if (checkGame.GameType != GameType.FreeForAll)
+            {
+                return new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "That is not a free for all game" }).ToString(), Encoding.UTF8, "application/json")
+                };
+            }
+
             PlayerGame checkIfInGame = (from check in db.AllPlayerGames
                                         where check.PlayerID == playerID && check.GameID == gameID
                                         select check).FirstOrDefault();
@@ -66,6 +74,17 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
                 };
+            }
+
+            if (!checkIfInGame.Alive)
+            {
+                if (checkGame.GameType != GameType.Team)
+                {
+                    return new HttpResponseMessage()
+                    {
+                        Content = new StringContent(JArray.FromObject(new List<String>() { "YOU ARE DEAD" }).ToString(), Encoding.UTF8, "application/json")
+                    };
+                }
             }
 
             FreeForAllGameWebSocketHandler handler = new FreeForAllGameWebSocketHandler();

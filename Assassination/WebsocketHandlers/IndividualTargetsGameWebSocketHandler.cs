@@ -1,4 +1,5 @@
-﻿using Microsoft.Web.WebSockets;
+﻿using Assassination.Models;
+using Microsoft.Web.WebSockets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ namespace Assassination.WebsocketHandlers
         public string playerName { get; set; }
         public string targetName { get; set; }
         // <gameid<playername<targetname, clients>>>
+        private static Dictionary<int, Dictionary<string, double[]>> locations = new Dictionary<int, Dictionary<string, double[]>>();
         private static Dictionary<int, Dictionary<string, Dictionary<string, WebSocketCollection>>> targets = new Dictionary<int, Dictionary<string, Dictionary<string, WebSocketCollection>>>();
 
         public void setUpGroup()
@@ -30,6 +32,17 @@ namespace Assassination.WebsocketHandlers
             if(!targets[gameID][playerName].ContainsKey(targetName))
             {
                 targets[gameID][playerName][targetName] = new WebSocketCollection();
+            }
+
+            if (!locations.ContainsKey(gameID))
+            {
+                locations[gameID] = new Dictionary<string, double[]>();
+            }
+
+            if (!locations[gameID].ContainsKey(playerName))
+            {
+                locations[gameID][playerName] = new double[3];
+                locations[gameID][playerName][2] = 0;
             }
         }
 
@@ -59,6 +72,7 @@ namespace Assassination.WebsocketHandlers
 
                 if (!targets.ContainsKey(int.Parse(data[0])))
                 {
+                    this.Close();
                     return;
                 }
                 else
@@ -85,11 +99,13 @@ namespace Assassination.WebsocketHandlers
 
                 if (!targets.ContainsKey(int.Parse(data[0])))
                 {
+                    this.Close();
                     return;
                 }
 
                 if (!targets[int.Parse(data[0])].ContainsKey(data[1]))
                 {
+                    this.Close();
                     return;
                 }
 
@@ -114,6 +130,26 @@ namespace Assassination.WebsocketHandlers
             {
                 targets.Remove(gameID);
             }
+        }
+
+        public Tuple<bool, Geocoordinate> GetPlayerLocation(int game, string player)
+        {
+            if (locations.ContainsKey(game))
+            {
+                if (locations[game].ContainsKey(player))
+                {
+                    if (locations[game][player][2] == 0)
+                    {
+                        return new Tuple<bool, Geocoordinate>(true, new Geocoordinate(Convert.ToSingle(locations[game][player][0]), Convert.ToSingle(locations[game][player][1])));
+                    }
+                    else if (locations[game][player][2] > 0)
+                    {
+                        return new Tuple<bool, Geocoordinate>(true, new Geocoordinate(Convert.ToSingle(locations[game][player][0]), Convert.ToSingle(locations[game][player][1]), Convert.ToSingle(locations[game][player][2])));
+                    }
+                }
+            }
+
+            return new Tuple<bool, Geocoordinate>(false, new Geocoordinate());
         }
     }
 }

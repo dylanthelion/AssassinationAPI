@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -47,14 +48,24 @@ namespace Assassination.Controllers
             Account accountDetails = (from check in db.AllAccounts
                                       where check.PlayerID == playerID
                                       select check).FirstOrDefault();
+            DateTime oneWeekAgo = DateTime.Now.AddDays(-7);
 
             int gamesThisWeek = (from archive in db.AllGameArchives
                                  join pga in db.AllPlayerGameArchives on archive.ID equals pga.GameID
                                  join pa in db.AllAccountArchives on pga.PlayerID equals pa.ID
                                  join map in db.AppAccountArchiveMap on pa.ID equals map.AccountArchiveID
                                  join player in db.AllPlayers on map.PlayerID equals player.ID
-                                 where player.ID == playerID && Math.Abs((DateTime.Now - archive.EndTime).TotalHours) < 168
+                                 where player.ID == playerID && DateTime.Compare(archive.EndTime, oneWeekAgo) > 0
                                  select pga).ToList().Count;
+
+            int currentGames = (from check in db.AllPlayerGames
+                                where check.PlayerID == playerID
+                                select check).ToList().Count;
+
+            gamesThisWeek += currentGames;
+
+            Debug.WriteLine("Games this week: " + gamesThisWeek.ToString());
+            Debug.WriteLine("Max Games: " + accountDetails.MaxGamesPerWeek.ToString());
 
             if (gamesThisWeek >= accountDetails.MaxGamesPerWeek)
             {
@@ -144,6 +155,8 @@ namespace Assassination.Controllers
             db.AllPlayerGames.Add(pg);
             db.SaveChanges();
 
+            db.Entry(g).GetDatabaseValues();
+
             return new HttpResponseMessage()
             {
                 Content = new StringContent(JArray.FromObject(new List<String>() { String.Format("Game created! ID: {0}", g.ID.ToString()) }).ToString(), Encoding.UTF8, "application/json")
@@ -151,7 +164,7 @@ namespace Assassination.Controllers
         }
 
         [HttpPut]
-        public HttpResponseMessage EditGame([FromBody] Game game, int playerID, string password)
+        public HttpResponseMessage EditGame([FromBody] Game game, int playerID, string password, int gameID)
         {
             if (!ModelState.IsValid)
             {
@@ -162,7 +175,8 @@ namespace Assassination.Controllers
             }
 
             Player checkPlayer = db.AllPlayers.Find(playerID);
-            Game checkGame = db.AllGames.Find(game.ID);
+            Debug.WriteLine("ID: " + gameID);
+            Game checkGame = db.AllGames.Find(gameID);
 
             if (checkPlayer == null)
             {
@@ -206,8 +220,16 @@ namespace Assassination.Controllers
             {
                 coord = new Geocoordinate(game.Location.Latitude, game.Location.Longitude);
                 db.AllGameCoords.Add(coord);
-                db.AllGameCoords.Remove(checkGame.Location);
-                db.Entry(checkGame.Location).State = EntityState.Deleted;
+                Geocoordinate loc = (from check in db.AllGameCoords
+                                     join games in db.AllGames on check.ID equals games.LocationID
+                                     select check).FirstOrDefault();
+                if (loc != null)
+                {
+                    db.AllGameCoords.Remove(loc);
+                    db.Entry(loc).State = EntityState.Deleted;
+                }
+                checkGame.Location = null;
+                checkGame.LocationID = coord.ID;
                 checkGame.Location = coord;
             }
 
@@ -348,6 +370,11 @@ namespace Assassination.Controllers
             {
                 results.Add("Latitude", checkGame.Location.Latitude.ToString());
                 results.Add("Longitude", checkGame.Location.Longitude.ToString());
+            }
+
+            if(checkGame.StartTime != null)
+            {
+                results.Add("Start Time", checkGame.StartTime.ToShortTimeString());
             }
             results.Add("Moderator", moderator);
             results.Add("Location", location);

@@ -1,4 +1,5 @@
-﻿using Microsoft.Web.WebSockets;
+﻿using Assassination.Models;
+using Microsoft.Web.WebSockets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -66,6 +67,7 @@ namespace Assassination.WebsocketHandlers
 
                 if (!targets.ContainsKey(int.Parse(data[0])))
                 {
+                    this.Close();
                     return;
                 }
                 else
@@ -89,6 +91,7 @@ namespace Assassination.WebsocketHandlers
 
                 if (!targets.ContainsKey(int.Parse(data[0])))
                 {
+                    this.Close();
                     return;
                 }
 
@@ -106,6 +109,7 @@ namespace Assassination.WebsocketHandlers
 
                 if (!inGame)
                 {
+                    this.Close();
                     return;
                 }
 
@@ -132,6 +136,29 @@ namespace Assassination.WebsocketHandlers
                 locations.Remove(gameID);
                 targets.Remove(gameID);
             }
+        }
+
+        public Tuple<bool, Geocoordinate> GetPlayerLocation(int game, string player, string team)
+        {
+            if (locations.ContainsKey(game))
+            {
+                if (locations[game].ContainsKey(team))
+                {
+                    if (locations[game][team].ContainsKey(player))
+                    {
+                        if (locations[game][team][player][2] == 0)
+                        {
+                            return new Tuple<bool, Geocoordinate>(true, new Geocoordinate(Convert.ToSingle(locations[game][team][player][0]), Convert.ToSingle(locations[game][team][player][1])));
+                        }
+                        else if (locations[game][team][player][2] > 0)
+                        {
+                            return new Tuple<bool, Geocoordinate>(true, new Geocoordinate(Convert.ToSingle(locations[game][team][player][0]), Convert.ToSingle(locations[game][team][player][1]), Convert.ToSingle(locations[game][team][player][2])));
+                        }
+                    }
+                }
+            }
+
+            return new Tuple<bool, Geocoordinate>(false, new Geocoordinate());
         }
     }
 }

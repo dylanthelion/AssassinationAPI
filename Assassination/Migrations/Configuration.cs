@@ -41,6 +41,7 @@ namespace Assassination.Migrations
                     Player p = new Player();
                     p.Email = String.Format("test{0}@test{1}.com", i.ToString(), i.ToString());
                     p.UserName = String.Format("Test{0}", i.ToString());
+                    p.Password = String.Format("test{0}test{1}", i.ToString(), i.ToString());
                     Account a = new Account(p);
                     a.Experience = 0;
                     a.MaxGamesPerWeek = 10;
@@ -81,6 +82,26 @@ namespace Assassination.Migrations
                 foreach (Device d in newDevices)
                 {
                     context.AllDevices.Add(d);
+                }
+            }
+
+            foreach (Account a in context.AllAccounts)
+            {
+                a.MaxGameLengthInMinutes = 45;
+                a.MaxGamesPerWeek = 3;
+                a.MaxKillRadiusInMeters = 10;
+                a.MaxPlayers = 5;
+                a.MaxRadiusInMeters = 1500;
+                a.MaxTeams = 2;
+                context.Entry(a).State = EntityState.Modified;
+            }
+
+            foreach (Player p in context.AllPlayers)
+            {
+                if (p.Password == "")
+                {
+                    p.Password = "test1test1";
+                    context.Entry(p).State = EntityState.Modified;
                 }
             }
 

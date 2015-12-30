@@ -32,6 +32,8 @@ namespace Assassination.Models
         public Game()
         {
             IsActiveGame = false;
+            RadiusInMeters = 1500;
+            GameLengthInMinutes = 45;
         }
 
         public Game(string location) : this()

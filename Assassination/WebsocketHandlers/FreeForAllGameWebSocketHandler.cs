@@ -5,6 +5,7 @@ using System.Web;
 using System.Net.WebSockets;
 using Microsoft.Web.WebSockets;
 using System.Diagnostics;
+using Assassination.Models;
 
 namespace Assassination.WebsocketHandlers
 {
@@ -12,7 +13,8 @@ namespace Assassination.WebsocketHandlers
      {
          public int gameID { get; set; }
          private static Dictionary<int, WebSocketCollection> clients = new Dictionary<int, WebSocketCollection>();
-         private static Dictionary<int, Dictionary<int, double[]>> locations = new Dictionary<int, Dictionary<int, double[]>>();
+        // gameID, playername
+         private static Dictionary<int, Dictionary<string, double[]>> locations = new Dictionary<int, Dictionary<string, double[]>>();
          public string userName { get; set; }
  
          public void setUpGroup()
@@ -20,6 +22,17 @@ namespace Assassination.WebsocketHandlers
              if (!clients.ContainsKey(gameID))
              {
                  clients[gameID] = new WebSocketCollection();
+             }
+
+             if(!locations.ContainsKey(gameID))
+             {
+                 locations[gameID] = new Dictionary<string, double[]>();
+             }
+
+             if (!locations[gameID].ContainsKey(userName))
+             {
+                 locations[gameID][userName] = new double[3];
+                 locations[gameID][userName][2] = 0;
              }
          }
  
@@ -49,6 +62,7 @@ namespace Assassination.WebsocketHandlers
 
                  if(!clients.ContainsKey(int.Parse(data[0])))
                  {
+                     this.Close();
                      return;
                  } else {
                      clients[int.Parse(data[0])].Broadcast(data[1]);
@@ -67,16 +81,18 @@ namespace Assassination.WebsocketHandlers
 
                  if(!clients.ContainsKey(int.Parse(data[0])) || !locations.ContainsKey(int.Parse(data[0])))
                  {
+                     this.Close();
                      return;
                  }
 
-                 if(!locations[int.Parse(data[0])].ContainsKey(int.Parse(data[1])))
+                 if(!locations[int.Parse(data[0])].ContainsKey(data[1]))
                  {
+                     this.Close();
                      return;
                  }
 
-                 locations[int.Parse(data[0])][int.Parse(data[1])][0] = double.Parse(data[2]);
-                 locations[int.Parse(data[0])][int.Parse(data[1])][1] = double.Parse(data[3]);
+                 locations[int.Parse(data[0])][data[1]][0] = double.Parse(data[2]);
+                 locations[int.Parse(data[0])][data[1]][1] = double.Parse(data[3]);
 
                  clients[int.Parse(data[0])].Broadcast(locations[int.Parse(data[0])].ToString());
              }
@@ -90,6 +106,26 @@ namespace Assassination.WebsocketHandlers
              {
                  clients.Remove(gameID);
              }
+         }
+
+         public Tuple<bool, Geocoordinate> GetPlayerLocation(int game, string playerName)
+         {
+             if(locations.ContainsKey(game))
+             {
+                 if(locations[game].ContainsKey(playerName))
+                 {
+                     if(locations[game][playerName][2] == 0)
+                     {
+                         return new Tuple<bool,Geocoordinate>(true, new Geocoordinate(Convert.ToSingle(locations[game][playerName][0]), Convert.ToSingle(locations[game][playerName][1])));
+                     }
+                     else if (locations[game][playerName][2] > 0)
+                     {
+                         return new Tuple<bool, Geocoordinate>(true, new Geocoordinate(Convert.ToSingle(locations[game][playerName][0]), Convert.ToSingle(locations[game][playerName][1]), Convert.ToSingle(locations[game][playerName][2])));
+                     }
+                 }
+             }
+
+             return new Tuple<bool, Geocoordinate>(false, new Geocoordinate());
          }
     }
 }

@@ -173,7 +173,6 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DeviceController.cs" />
     <Compile Include="Controllers\GameController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\JoinFreeForAllGameController.cs" />
     <Compile Include="Controllers\JoinIndividualTargetsGameController.cs" />
     <Compile Include="Controllers\JoinTeamGameController.cs" />
@@ -181,7 +180,6 @@
     <Compile Include="Controllers\PlayController.cs" />
     <Compile Include="Controllers\RallyController.cs" />
     <Compile Include="Controllers\SetupGameController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
