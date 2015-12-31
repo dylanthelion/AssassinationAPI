@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using System.Text;
 using Assassination.WebsocketHandlers;
 using System.Net;
+using Assassination.Helpers;
 
 namespace Assassination.Controllers
 {
@@ -20,9 +21,15 @@ namespace Assassination.Controllers
         [HttpGet]
         public HttpResponseMessage JoinGame([FromBody] Geocoordinate location, int gameID, int playerID, string password)
         {
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateAliveInGame(playerID, password, gameID);
+            if (validator.Item1)
+            {
+                return validator.Item2;
+            }
+
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -36,11 +43,11 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Game checkGame = db.AllGames.Find(gameID);
 
-            if (checkGame == null)
+            /*if (checkGame == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -54,7 +61,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started, yet" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             if (checkGame.GameType != GameType.Team)
             {
@@ -62,19 +69,17 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That is not a team game" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
-
-            PlayerGame checkIfInGame = (from check in db.AllPlayerGames
+            }PlayerGame checkIfInGame = (from check in db.AllPlayerGames
                                         where check.PlayerID == playerID && check.GameID == gameID
                                         select check).FirstOrDefault();
 
-            if (checkIfInGame == null)
+            /*if (checkIfInGame == null)
             {
                 return new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             if (checkIfInGame.TeamName == null || checkIfInGame.TeamName.Length == 0)
             {
@@ -84,7 +89,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            if (!checkIfInGame.Alive)
+            /*if (!checkIfInGame.Alive)
             {
                 if (checkGame.GameType != GameType.Team)
                 {
@@ -93,7 +98,7 @@ namespace Assassination.Controllers
                         Content = new StringContent(JArray.FromObject(new List<String>() { "YOU ARE DEAD" }).ToString(), Encoding.UTF8, "application/json")
                     };
                 }
-            }
+            }*/
 
             TeamGameWebSocketHandler handler = new TeamGameWebSocketHandler();
             handler.gameID = gameID;

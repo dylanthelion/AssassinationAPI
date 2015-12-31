@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using System.Text;
 using Assassination.WebsocketHandlers;
 using System.Net;
+using Assassination.Helpers;
 
 namespace Assassination.Controllers
 {
@@ -22,7 +23,13 @@ namespace Assassination.Controllers
         {
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateAliveInGame(playerID, password, gameID);
+            if (validator.Item1)
+            {
+                return validator.Item2;
+            }
+
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -36,11 +43,11 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Game checkGame = db.AllGames.Find(gameID);
 
-            if (checkGame == null)
+            /*if (checkGame == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -54,7 +61,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started, yet" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             if (checkGame.GameType != GameType.IndividualTargets)
             {
@@ -64,7 +71,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            PlayerGame checkIfInGame = (from check in db.AllPlayerGames
+            /*PlayerGame checkIfInGame = (from check in db.AllPlayerGames
                                         where check.PlayerID == playerID && check.GameID == gameID
                                         select check).FirstOrDefault();
 
@@ -74,7 +81,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             String checkTarget = (from check in db.AllTargets
                                  join playerGames in db.AllPlayerGames on check.PlayerGameID equals playerGames.ID
@@ -90,7 +97,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            if (!checkIfInGame.Alive)
+            /*if (!checkIfInGame.Alive)
             {
                 if (checkGame.GameType != GameType.Team)
                 {
@@ -99,7 +106,9 @@ namespace Assassination.Controllers
                         Content = new StringContent(JArray.FromObject(new List<String>() { "YOU ARE DEAD" }).ToString(), Encoding.UTF8, "application/json")
                     };
                 }
-            }
+            }*/
+
+            
 
             IndividualTargetsGameWebSocketHandler handler = new IndividualTargetsGameWebSocketHandler();
             handler.gameID = gameID;

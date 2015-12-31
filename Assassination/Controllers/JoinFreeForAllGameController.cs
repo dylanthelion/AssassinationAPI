@@ -10,6 +10,7 @@ using System.Text;
 using System.Web;
 using System.Web.Http;
 using Microsoft.Web.WebSockets;
+using Assassination.Helpers;
 
 namespace Assassination.Controllers
 {
@@ -20,9 +21,15 @@ namespace Assassination.Controllers
         [HttpGet]
         public HttpResponseMessage JoinGame([FromBody] Geocoordinate location, int gameID, int playerID, string password)
         {
-            Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateAliveInGame(playerID, password, gameID);
+            if (validator.Item1)
+            {
+                return validator.Item2;
+            }
+            //Player checkPlayer = db.AllPlayers.Find(playerID);
+
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -38,7 +45,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            Game checkGame = db.AllGames.Find(gameID);
+            
 
             if (checkGame == null)
             {
@@ -54,7 +61,9 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started, yet" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
+
+            Game checkGame = db.AllGames.Find(gameID);
 
             if (checkGame.GameType != GameType.FreeForAll)
             {
@@ -64,7 +73,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            PlayerGame checkIfInGame = (from check in db.AllPlayerGames
+            /*PlayerGame checkIfInGame = (from check in db.AllPlayerGames
                                         where check.PlayerID == playerID && check.GameID == gameID
                                         select check).FirstOrDefault();
 
@@ -85,7 +94,7 @@ namespace Assassination.Controllers
                         Content = new StringContent(JArray.FromObject(new List<String>() { "YOU ARE DEAD" }).ToString(), Encoding.UTF8, "application/json")
                     };
                 }
-            }
+            }*/
 
             FreeForAllGameWebSocketHandler handler = new FreeForAllGameWebSocketHandler();
             handler.gameID = gameID;

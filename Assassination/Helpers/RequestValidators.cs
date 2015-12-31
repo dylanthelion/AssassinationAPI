@@ -239,16 +239,10 @@ namespace Assassination.Helpers
 
         public static Tuple<bool, HttpResponseMessage> ValidateModerator(int playerID, string password, int gameID)
         {
-            Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
+            Tuple<bool, HttpResponseMessage> validator = ValidateIfInGame(playerID, password, gameID);
             if (validator.Item1)
             {
                 return validator;
-            }
-
-            Tuple<bool, HttpResponseMessage> gameValidator = ValidateGame(gameID);
-            if (gameValidator.Item1)
-            {
-                return gameValidator;
             }
 
             bool isModerator = (from check in db.AllPlayerGames
@@ -273,6 +267,71 @@ namespace Assassination.Helpers
                 return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public static Tuple<bool, HttpResponseMessage> ValidateAliveInGame(int playerID, string password, int gameID)
+        {
+            Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
+            if (validator.Item1)
+            {
+                return validator;
+            }
+
+            Tuple<bool, HttpResponseMessage> gameValidator = ValidateGame(gameID);
+            if (gameValidator.Item1)
+            {
+                return gameValidator;
+            }
+
+            bool checkActiveGame = db.AllGames.Find(gameID).IsActiveGame;
+            if (!checkActiveGame)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not been set up, yet" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            bool checkAlive = (from check in db.AllPlayerGames
+                               where check.GameID == gameID && check.PlayerID == playerID
+                               select check.Alive).FirstOrDefault();
+            if (!checkAlive)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game, or you are dead" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public static Tuple<bool, HttpResponseMessage> ValidateIfInGame(int playerID, string password, int gameID)
+        {
+            Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
+            if (validator.Item1)
+            {
+                return validator;
+            }
+
+            Tuple<bool, HttpResponseMessage> gameValidator = ValidateGame(gameID);
+            if (gameValidator.Item1)
+            {
+                return gameValidator;
+            }
+
+            PlayerGame checkIfInGame = (from check in db.AllPlayerGames
+                                        where check.PlayerID == playerID && check.GameID == gameID
+                                        select check).FirstOrDefault();
+            if (checkIfInGame == null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
                 });
             }
 
