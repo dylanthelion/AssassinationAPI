@@ -28,10 +28,12 @@ namespace Assassination.Controllers
                 };
             }
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateAccount(playerID, password);
-            if (validator.Item1)
+            RequestValidators validator = new RequestValidators();
+
+            Tuple<bool, HttpResponseMessage> accountValidator = validator.ValidateAccount(playerID, password);
+            if (accountValidator.Item1)
             {
-                return validator.Item2;
+                return accountValidator.Item2;
             }
 
             Player checkPlayer = db.AllPlayers.Find(playerID);
@@ -185,10 +187,12 @@ namespace Assassination.Controllers
             //Debug.WriteLine("ID: " + gameID);
             Game checkGame = db.AllGames.Find(gameID);
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateModerator(playerID, password, gameID);
-            if (validator.Item1)
+            RequestValidators validator = new RequestValidators();
+
+            Tuple<bool, HttpResponseMessage> moderatorValidator = validator.ValidateModerator(playerID, password, gameID);
+            if (moderatorValidator.Item1)
             {
-                return validator.Item2;
+                return moderatorValidator.Item2;
             }
 
             /*if (checkPlayer == null)
@@ -298,10 +302,12 @@ namespace Assassination.Controllers
             Game checkGame = db.AllGames.Find(gameID);
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateModerator(playerID, password, gameID);
-            if (validator.Item1)
+            RequestValidators validator = new RequestValidators();
+
+            Tuple<bool, HttpResponseMessage> moderatorValidator = validator.ValidateModerator(playerID, password, gameID);
+            if (moderatorValidator.Item1)
             {
-                return validator.Item2;
+                return moderatorValidator.Item2;
             }
 
             /*if (checkPlayer == null)
@@ -371,10 +377,12 @@ namespace Assassination.Controllers
                 };
             }*/
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateGame(gameID);
-            if (validator.Item1)
+            RequestValidators validator = new RequestValidators();
+
+            Tuple<bool, HttpResponseMessage> gameValidator = validator.ValidateGame(gameID);
+            if (gameValidator.Item1)
             {
-                return validator.Item2;
+                return gameValidator.Item2;
             }
 
             JObject results = new JObject();

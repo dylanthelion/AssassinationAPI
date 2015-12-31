@@ -9,11 +9,11 @@ using System.Web;
 
 namespace Assassination.Helpers
 {
-    public static class RequestValidators
+    public class RequestValidators
     {
-        public static AssassinationContext db = new AssassinationContext();
+        public AssassinationContext db = new AssassinationContext();
 
-        public static Tuple<bool, HttpResponseMessage> ValidateNewPlayer(string userName, string email, string UUID)
+        public Tuple<bool, HttpResponseMessage> ValidateNewPlayer(string userName, string email, string UUID)
         {
             /*Player checkForUniqueName = (from check in db.AllPlayers
                                          where check.UserName == userName
@@ -71,7 +71,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> CheckForUniqueDevice(string UUID)
+        public Tuple<bool, HttpResponseMessage> CheckForUniqueDevice(string UUID)
         {
             Device checkForUniqueDevice = (from check in db.AllDevices
                                            where check.UUID == UUID
@@ -87,7 +87,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> ValidatePlayerInformation(int id, string password)
+        public Tuple<bool, HttpResponseMessage> ValidatePlayerInformation(int id, string password)
         {
             string checkPassword = (from check in db.AllPlayers
                                     where check.ID == id
@@ -112,7 +112,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> CheckForUniqueName(string name)
+        public Tuple<bool, HttpResponseMessage> CheckForUniqueName(string name)
         {
             Player checkForUniqueName = (from check in db.AllPlayers
                                          where check.UserName == name
@@ -128,7 +128,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> CheckForUniqueEmail(string email)
+        public Tuple<bool, HttpResponseMessage> CheckForUniqueEmail(string email)
         {
             Player checkForUniqueEmail = (from check in db.AllPlayers
                                          where check.UserName == email
@@ -144,7 +144,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> ValidatePlayerInformationWithEmail(int id, string password, string email)
+        public Tuple<bool, HttpResponseMessage> ValidatePlayerInformationWithEmail(int id, string password, string email)
         {
             Tuple<bool, HttpResponseMessage> playerValidator = ValidatePlayerInformation(id, password);
             if(playerValidator.Item1)
@@ -166,7 +166,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> ValidatePlayerInformationWithUserName(string name, string password)
+        public Tuple<bool, HttpResponseMessage> ValidatePlayerInformationWithUserName(string name, string password)
         {
             string checkPassword = (from check in db.AllPlayers
                                     where check.UserName == name
@@ -191,7 +191,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> ValidateDevice(int playerID, string password, string UUID)
+        public Tuple<bool, HttpResponseMessage> ValidateDevice(int playerID, string password, string UUID)
         {
             Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
             if (validator.Item1)
@@ -214,7 +214,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> ValidateAccount(int playerID, string password)
+        public Tuple<bool, HttpResponseMessage> ValidateAccount(int playerID, string password)
         {
             Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
             if (validator.Item1)
@@ -237,7 +237,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> ValidateModerator(int playerID, string password, int gameID)
+        public Tuple<bool, HttpResponseMessage> ValidateModerator(int playerID, string password, int gameID)
         {
             Tuple<bool, HttpResponseMessage> validator = ValidateIfInGame(playerID, password, gameID);
             if (validator.Item1)
@@ -259,7 +259,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> ValidateGame(int gameID)
+        public Tuple<bool, HttpResponseMessage> ValidateGame(int gameID)
         {
             Game checkGame = db.AllGames.Find(gameID);
             if (checkGame == null)
@@ -273,7 +273,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> ValidateAliveInGame(int playerID, string password, int gameID)
+        public Tuple<bool, HttpResponseMessage> ValidateAliveInGame(int playerID, string password, int gameID)
         {
             Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
             if (validator.Item1)
@@ -310,7 +310,7 @@ namespace Assassination.Helpers
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
-        public static Tuple<bool, HttpResponseMessage> ValidateIfInGame(int playerID, string password, int gameID)
+        public Tuple<bool, HttpResponseMessage> ValidateIfInGame(int playerID, string password, int gameID)
         {
             Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
             if (validator.Item1)
@@ -332,6 +332,69 @@ namespace Assassination.Helpers
                 return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public Tuple<bool, HttpResponseMessage> ValidatePlayerWithEmail(string email, string password)
+        {
+            Player checkPlayer = (from check in db.AllPlayers
+                                  where check.Email == email
+                                  select check).FirstOrDefault();
+            if (checkPlayer == null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid email" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            if (checkPlayer.Password != password)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public Tuple<bool, HttpResponseMessage> ValidatePlayerForChange(int playerID, string playerName, string email, string password)
+        {
+            Player checkPlayer = db.AllPlayers.Find(playerID);
+
+            if (checkPlayer == null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            if (checkPlayer.UserName != playerName)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player name" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            if (checkPlayer.Email != email)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid email" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            if (checkPlayer.Password != password)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
                 });
             }
 

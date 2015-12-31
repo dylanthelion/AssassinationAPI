@@ -23,10 +23,12 @@ namespace Assassination.Controllers
         {
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateAliveInGame(playerID, password, gameID);
-            if (validator.Item1)
+            RequestValidators validator = new RequestValidators();
+
+            Tuple<bool, HttpResponseMessage> aliveValidator = validator.ValidateAliveInGame(playerID, password, gameID);
+            if (aliveValidator.Item1)
             {
-                return validator.Item2;
+                return aliveValidator.Item2;
             }
 
             /*if (checkPlayer == null)

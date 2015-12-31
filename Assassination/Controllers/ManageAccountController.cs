@@ -40,6 +40,13 @@ namespace Assassination.Controllers
                 };
             }
 
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> playerValidator = validator.ValidatePlayerWithEmail(email, password);
+            if (playerValidator.Item1)
+            {
+                return playerValidator.Item2;
+            }
+
             List<String> devices = (from check in db.AllDevices
                                     where check.PlayerID == checkPlayer.ID
                                     select check.UUID).ToList();
@@ -68,7 +75,14 @@ namespace Assassination.Controllers
             }
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> accountValidator = validator.ValidatePlayerForChange(playerID, userName, oldEmail, password);
+            if (accountValidator.Item1)
+            {
+                return accountValidator.Item2;
+            }
+
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -98,7 +112,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid email" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             EmailAddressAttribute attr = new EmailAddressAttribute();
             bool isValid = attr.IsValid(newEmail);
@@ -131,9 +145,18 @@ namespace Assassination.Controllers
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Password must be at least 10 characters" }).ToString(), Encoding.UTF8, "application/json")
                 };
             }
+
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> accountValidator = validator.ValidatePlayerForChange(playerID, userName, email, oldPassword);
+            if (accountValidator.Item1)
+            {
+                return accountValidator.Item2;
+            }
+
+
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -163,7 +186,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid email" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             checkPlayer.Password = newPassword;
             db.Entry(checkPlayer).State = EntityState.Modified;

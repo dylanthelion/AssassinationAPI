@@ -21,11 +21,12 @@ namespace Assassination.Controllers
         [HttpGet]
         public HttpResponseMessage JoinGame([FromBody] Geocoordinate location, int gameID, int playerID, string password)
         {
+            RequestValidators validator = new RequestValidators();
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateAliveInGame(playerID, password, gameID);
-            if (validator.Item1)
+            Tuple<bool, HttpResponseMessage> aliveValidator = validator.ValidateAliveInGame(playerID, password, gameID);
+            if (aliveValidator.Item1)
             {
-                return validator.Item2;
+                return aliveValidator.Item2;
             }
             //Player checkPlayer = db.AllPlayers.Find(playerID);
 

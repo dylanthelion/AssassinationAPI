@@ -26,13 +26,15 @@ namespace Assassination.Controllers
                                   where check.UUID == UUID
                                   select check).FirstOrDefault();
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidatePlayerInformationWithUserName(userName, password);
-            if(validator.Item1)
+            RequestValidators validator = new RequestValidators();
+
+            Tuple<bool, HttpResponseMessage> playerValidator = validator.ValidatePlayerInformationWithUserName(userName, password);
+            if(playerValidator.Item1)
             {
-                return validator.Item2;
+                return playerValidator.Item2;
             }
 
-            Tuple<bool, HttpResponseMessage> deviceValidator = RequestValidators.CheckForUniqueDevice(UUID);
+            Tuple<bool, HttpResponseMessage> deviceValidator = validator.CheckForUniqueDevice(UUID);
             if (deviceValidator.Item1)
             {
                 return deviceValidator.Item2;
@@ -81,10 +83,12 @@ namespace Assassination.Controllers
                                   where check.UUID == UUID
                                   select check).FirstOrDefault();
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateDevice(playerID, password, UUID);
-            if (validator.Item1)
+            RequestValidators validator = new RequestValidators();
+
+            Tuple<bool, HttpResponseMessage> deviceValidator = validator.ValidateDevice(playerID, password, UUID);
+            if (deviceValidator.Item1)
             {
-                return validator.Item2;
+                return deviceValidator.Item2;
             }
 
             /*if (checkPlayer == null)

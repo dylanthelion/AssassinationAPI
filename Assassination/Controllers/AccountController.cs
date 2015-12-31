@@ -62,11 +62,13 @@ namespace Assassination.Controllers
                 };
             }*/
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidateNewPlayer(player.UserName, player.Email, UUID);
+            RequestValidators validator = new RequestValidators();
 
-            if (validator.Item1)
+            Tuple<bool, HttpResponseMessage> playerValidator = validator.ValidateNewPlayer(player.UserName, player.Email, UUID);
+
+            if (playerValidator.Item1)
             {
-                return validator.Item2;
+                return playerValidator.Item2;
             }
 
             Player p = new Player(player.UserName, player.Email, player.Password);
@@ -122,15 +124,18 @@ namespace Assassination.Controllers
                 };
             }*/
 
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidatePlayerInformation(id, player.Password);
-            if (validator.Item1)
+            RequestValidators validator = new RequestValidators();
+
+            Tuple<bool, HttpResponseMessage> playerValidator = validator.ValidatePlayerInformation(id, player.Password);
+
+            if (playerValidator.Item1)
             {
-                return validator.Item2;
+                return playerValidator.Item2;
             }
 
             if (checkPlayer.UserName != player.UserName)
             {
-                Tuple<bool, HttpResponseMessage> nameValidator = RequestValidators.CheckForUniqueName(player.UserName);
+                Tuple<bool, HttpResponseMessage> nameValidator = validator.CheckForUniqueName(player.UserName);
                 if (nameValidator.Item1)
                 {
                     return nameValidator.Item2;
@@ -154,7 +159,7 @@ namespace Assassination.Controllers
 
             if (checkPlayer.Email != player.Email)
             {
-                Tuple<bool, HttpResponseMessage> emailValidator = RequestValidators.CheckForUniqueEmail(player.Email);
+                Tuple<bool, HttpResponseMessage> emailValidator = validator.CheckForUniqueEmail(player.Email);
                 if (emailValidator.Item1)
                 {
                     return emailValidator.Item2;
@@ -187,10 +192,12 @@ namespace Assassination.Controllers
         [System.Web.Http.HttpDelete]
         public HttpResponseMessage DeletePlayer(int playerID, string email, string password)
         {
-            Tuple<bool, HttpResponseMessage> validator = RequestValidators.ValidatePlayerInformationWithEmail(playerID, password, email);
-            if (validator.Item1)
+            RequestValidators validator = new RequestValidators();
+
+            Tuple<bool, HttpResponseMessage> playerValidator = validator.ValidatePlayerInformationWithEmail(playerID, password, email);
+            if (playerValidator.Item1)
             {
-                return validator.Item2;
+                return playerValidator.Item2;
             }
 
 
