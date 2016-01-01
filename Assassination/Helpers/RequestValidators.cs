@@ -400,5 +400,28 @@ namespace Assassination.Helpers
 
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
+
+        public Tuple<bool, HttpResponseMessage> ValidateIfInActiveGame(int playerID, string password, int gameID)
+        {
+            Tuple<bool, HttpResponseMessage> validator = ValidateIfInGame(playerID, password, gameID);
+            if (validator.Item1)
+            {
+                return validator;
+            }
+
+            bool isActiveGame = (from check in db.AllGames
+                                 where check.ID == gameID
+                                 select check.IsActiveGame).FirstOrDefault();
+
+            if (!isActiveGame)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not been started yet." }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
     }
 }

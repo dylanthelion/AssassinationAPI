@@ -1,4 +1,5 @@
-﻿using Assassination.Models;
+﻿using Assassination.Helpers;
+using Assassination.Models;
 using Assassination.WebsocketHandlers;
 using Microsoft.Web.WebSockets;
 using Newtonsoft.Json.Linq;
@@ -20,9 +21,16 @@ namespace Assassination.Controllers
         [HttpGet]
         public HttpResponseMessage GetLiveCharacters(int gameID, int playerID, string password)
         {
-            Player checkPlayer = db.AllPlayers.Find(playerID);
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> inGameValidator = validator.ValidateIfInActiveGame(playerID, password, gameID);
+            if (inGameValidator.Item1)
+            {
+                return inGameValidator.Item2;
+            }
 
-            if (checkPlayer == null)
+            //Player checkPlayer = db.AllPlayers.Find(playerID);
+
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -73,7 +81,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are dead" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             JObject results = new JObject();
 
@@ -98,6 +106,13 @@ namespace Assassination.Controllers
         [HttpPost]
         public HttpResponseMessage UpdateLocation([FromBody] Geocoordinate coords, int gameID, int playerID, string password)
         {
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> aliveValidator = validator.ValidateAliveInGame(playerID, password, gameID);
+            if (aliveValidator.Item1)
+            {
+                return aliveValidator.Item2;
+            }
+
             if(!ModelState.IsValid)
             {
                 return new HttpResponseMessage()
@@ -106,7 +121,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            Player checkPlayer = db.AllPlayers.Find(playerID);
+            /*Player checkPlayer = db.AllPlayers.Find(playerID);
 
             if (checkPlayer == null)
             {
@@ -140,12 +155,12 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             PlayerGame checkIfInGame = (from check in db.AllPlayerGames
                                         where check.PlayerID == playerID && check.GameID == gameID
                                         select check).FirstOrDefault();
-            if (checkIfInGame == null)
+            /*if (checkIfInGame == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -159,7 +174,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are dead" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             checkIfInGame.Latitude = coords.Latitude;
             checkIfInGame.Longitude = coords.Longitude;
@@ -175,6 +190,13 @@ namespace Assassination.Controllers
         [HttpDelete]
         public HttpResponseMessage KillPlayer([FromBody] Geocoordinate coords, int gameID, int playerID, string password, string targetName)
         {
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> aliveValidator = validator.ValidateAliveInGame(playerID, password, gameID);
+            if (aliveValidator.Item1)
+            {
+                return aliveValidator.Item2;
+            }
+
             if (!ModelState.IsValid)
             {
                 return new HttpResponseMessage()
@@ -185,7 +207,7 @@ namespace Assassination.Controllers
 
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -199,11 +221,11 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Game checkGame = db.AllGames.Find(gameID);
 
-            if (checkGame == null)
+            /*if (checkGame == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -217,12 +239,12 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             PlayerGame checkIfInGame = (from check in db.AllPlayerGames
                                         where check.PlayerID == playerID && check.GameID == gameID
                                         select check).FirstOrDefault();
-            if (checkIfInGame == null)
+            /*if (checkIfInGame == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -236,7 +258,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are dead" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Target checkTarget = (from check in db.AllTargets
                                   join player in db.AllPlayers on check.TargetID equals player.ID
@@ -389,7 +411,8 @@ namespace Assassination.Controllers
 
             if (endGame)
             {
-                PlayerGame[] allPlayerGames = (from check in db.AllPlayerGames
+                new Archiver().ArchiveGame(gameID, db);
+                /*PlayerGame[] allPlayerGames = (from check in db.AllPlayerGames
                                                    where check.GameID == gameID
                                                    orderby check.PlayerID
                                                    select check).ToArray();
@@ -457,7 +480,7 @@ namespace Assassination.Controllers
                 {
                     db.AllTargets.Remove(t);
                     db.Entry(t).State = EntityState.Deleted;
-                }
+                }*/
 
                 db.SaveChanges();
                 return new HttpResponseMessage()
