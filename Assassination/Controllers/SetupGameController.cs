@@ -19,10 +19,17 @@ namespace Assassination.Controllers
         [HttpPost]
         public HttpResponseMessage SetupGame([FromBody] List<string> teams, int gameID, int playerID, string password)
         {
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> moderatorValidator = validator.ValidateModerator(playerID, password, gameID);
+            if (moderatorValidator.Item1)
+            {
+                return moderatorValidator.Item2;
+            }
+
             Game checkGame = db.AllGames.Find(gameID);
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -44,7 +51,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             if (checkGame.GameType == GameType.Default)
             {
@@ -57,13 +64,13 @@ namespace Assassination.Controllers
             bool checkPG = (from check in db.AllPlayerGames
                             where check.PlayerID == playerID && check.GameID == gameID
                             select check.IsModerator).FirstOrDefault();
-            if (!checkPG)
+            /*if (!checkPG)
             {
                 return new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are not the moderator of that game" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Account checkAccount = (from check in db.AllAccounts
                                     where check.PlayerID == playerID
