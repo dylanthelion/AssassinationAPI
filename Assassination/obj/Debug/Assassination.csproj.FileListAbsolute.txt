@@ -77,3 +77,4 @@ C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassina
 C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassination.Migrations.UpdateGame.resources
 C:\Users\Administrator\Desktop\C\Assassination\Assassination\bin\Microsoft.WebSockets.dll
 C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassination.Migrations.GameType.resources
+C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassination.Migrations.Bans.resources

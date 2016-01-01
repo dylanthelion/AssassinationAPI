@@ -55,5 +55,6 @@ namespace Assassination.Models
         public DbSet<PlayerGameArchive> AllPlayerGameArchives { get; set; }
         public DbSet<Target> AllTargets { get; set; }
         public DbSet<TargetArchive> AllTargetArchives { get; set; }
+        public DbSet<Ban> AllBans { get; set; }
     }
 }

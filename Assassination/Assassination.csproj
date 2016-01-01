@@ -209,10 +209,15 @@
     <Compile Include="Migrations\201512230717165_GameType.Designer.cs">
       <DependentUpon>201512230717165_GameType.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601010520022_Bans.cs" />
+    <Compile Include="Migrations\201601010520022_Bans.Designer.cs">
+      <DependentUpon>201601010520022_Bans.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountArchive.cs" />
     <Compile Include="Models\AccountArchiveMap.cs" />
+    <Compile Include="Models\Ban.cs" />
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\GameArchive.cs" />
@@ -362,6 +367,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512230717165_GameType.resx">
       <DependentUpon>201512230717165_GameType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601010520022_Bans.resx">
+      <DependentUpon>201601010520022_Bans.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

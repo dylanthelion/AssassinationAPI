@@ -1,4 +1,5 @@
-﻿using Assassination.Models;
+﻿using Assassination.Helpers;
+using Assassination.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -36,9 +37,17 @@ namespace Assassination.Controllers
         [HttpPut]
         public HttpResponseMessage JoinGame(int gameID, int playerID, string password)
         {
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> eligibleValidator = validator.ValidateIfEligibleToJoin(playerID, password, gameID);
+            if (eligibleValidator.Item1)
+            {
+                return eligibleValidator.Item2;
+            }
+            
+
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            if (checkPlayer == null)
+            /*if (checkPlayer == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -52,11 +61,11 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             Game checkGame = db.AllGames.Find(gameID);
 
-            if (checkGame == null)
+            /*if (checkGame == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -92,7 +101,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That game is full" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             PlayerGame pg = new PlayerGame(checkPlayer, checkGame);
             db.AllPlayerGames.Add(pg);
@@ -108,7 +117,14 @@ namespace Assassination.Controllers
         [HttpDelete]
         public HttpResponseMessage LeaveGame(int gameID, int playerID, string password)
         {
-            Player checkPlayer = db.AllPlayers.Find(playerID);
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> leaveValidator = validator.ValidateIfInInactiveGame(playerID, password, gameID);
+            if (leaveValidator.Item1)
+            {
+                return leaveValidator.Item2;
+            }
+
+            /*Player checkPlayer = db.AllPlayers.Find(playerID);
 
             if (checkPlayer == null)
             {
@@ -142,13 +158,13 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That game has already started" }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             PlayerGame checkPlayerGame = (from check in db.AllPlayerGames
                                           where check.PlayerID == playerID && check.GameID == gameID
                                           select check).FirstOrDefault();
 
-            if (checkPlayerGame == null)
+            /*if (checkPlayerGame == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -162,7 +178,7 @@ namespace Assassination.Controllers
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "The moderator cannot leave. Please cancel the game, instead." }).ToString(), Encoding.UTF8, "application/json")
                 };
-            }
+            }*/
 
             db.AllPlayerGames.Remove(checkPlayerGame);
             db.Entry(checkPlayerGame).State = EntityState.Deleted;
@@ -171,6 +187,44 @@ namespace Assassination.Controllers
             return new HttpResponseMessage()
             {
                 Content = new StringContent(JArray.FromObject(new List<String>() { "Removed!" }).ToString(), Encoding.UTF8, "application/json")
+            };
+        }
+
+        [HttpPut]
+        public HttpResponseMessage BanPlayerFromGame(int moderatorID, string password, int gameID, string playerToBan)
+        {
+            RequestValidators validator = new RequestValidators();
+            Tuple<bool, HttpResponseMessage> moderatorValidator = validator.ValidateModerator(moderatorID, password, gameID);
+            if (moderatorValidator.Item1)
+            {
+                return moderatorValidator.Item2;
+            }
+
+            Player player = (from check in db.AllPlayers
+                            where check.UserName == playerToBan
+                            select check).FirstOrDefault();
+
+            Tuple<bool, HttpResponseMessage> playerValidator = validator.ValidateIfInInactiveGame(player.ID, player.Password, gameID);
+            if (playerValidator.Item1)
+            {
+                return playerValidator.Item2;
+            }
+
+            PlayerGame checkPG = (from check in db.AllPlayerGames
+                          where check.PlayerID == player.ID && check.GameID == gameID
+                          select check).FirstOrDefault();
+            Game g = db.AllGames.Find(gameID);
+
+            Ban b = new Ban(player, g);
+            db.AllBans.Add(b);
+            db.AllPlayerGames.Remove(checkPG);
+            db.Entry(checkPG).State = EntityState.Deleted;
+
+            db.SaveChanges();
+
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JArray.FromObject(new List<String>() { "Banned!" }).ToString(), Encoding.UTF8, "application/json")
             };
         }
     }

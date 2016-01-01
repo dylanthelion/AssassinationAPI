@@ -423,5 +423,78 @@ namespace Assassination.Helpers
 
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
+
+        public Tuple<bool, HttpResponseMessage> ValidateIfEligibleToJoin(int playerID, string password, int gameID)
+        {
+            Tuple<bool, HttpResponseMessage> validator = ValidatePlayerInformation(playerID, password);
+            if (validator.Item1)
+            {
+                return validator;
+            }
+
+            Tuple<bool, HttpResponseMessage> gameValidator = ValidateGame(gameID);
+            if (gameValidator.Item1)
+            {
+                return gameValidator;
+            }
+
+            PlayerGame checkIfInGame = (from check in db.AllPlayerGames
+                                        where check.PlayerID == playerID && check.GameID == gameID
+                                        select check).FirstOrDefault();
+            if (checkIfInGame != null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are already in that game" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            Ban checkBan = (from check in db.AllBans
+                            where check.PlayerID == playerID && check.GameID == gameID
+                            select check).FirstOrDefault();
+
+            if (checkBan != null)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "You have been kicked out of that game" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            int maxPlayers = db.AllGames.Find(gameID).NumberOfPlayers;
+            int playersInGame = (from check in db.AllPlayerGames
+                                 where check.GameID == gameID
+                                 select check).ToList().Count;
+
+            if (playersInGame >= maxPlayers)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game is already full" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
+
+        public Tuple<bool, HttpResponseMessage> ValidateIfInInactiveGame(int playerID, string password, int gameID)
+        {
+            Tuple<bool, HttpResponseMessage> validator = ValidateIfInGame(playerID, password, gameID);
+            if (validator.Item1)
+            {
+                return validator;
+            }
+
+            bool gameStarted = db.AllGames.Find(gameID).IsActiveGame;
+            if (gameStarted)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has already started" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
+        }
     }
 }
