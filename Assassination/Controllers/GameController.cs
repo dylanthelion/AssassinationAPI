@@ -99,9 +99,20 @@ namespace Assassination.Controllers
             if (game.Location != null)
             {
                 coord = new Geocoordinate(game.Location.Latitude, game.Location.Longitude);
-                db.AllGameCoords.Add(coord);
-                g.Location = coord;
+                if(game.Location.Altitude != 0)
+                {
+                    coord.Altitude = game.Location.Altitude;
+                } else {
+                    coord.Altitude = 0;
+                }
             }
+            else
+            {
+                coord = new Geocoordinate(0, 0, 0);
+            }
+
+            db.AllGameCoords.Add(coord);
+            g.Location = coord;
 
             if (game.NumberOfPlayers == 0)
             {

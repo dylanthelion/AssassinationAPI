@@ -131,7 +131,7 @@ namespace Assassination.Helpers
         public Tuple<bool, HttpResponseMessage> CheckForUniqueEmail(string email)
         {
             Player checkForUniqueEmail = (from check in db.AllPlayers
-                                         where check.UserName == email
+                                         where check.Email == email
                                          select check).FirstOrDefault();
             if (checkForUniqueEmail != null)
             {
@@ -176,7 +176,7 @@ namespace Assassination.Helpers
             {
                 return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
                 {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid user ID" }).ToString(), Encoding.UTF8, "application/json")
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid user name" }).ToString(), Encoding.UTF8, "application/json")
                 });
             }
 

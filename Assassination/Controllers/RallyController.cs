@@ -190,7 +190,7 @@ namespace Assassination.Controllers
             };
         }
 
-        [HttpPut]
+        [HttpPost]
         public HttpResponseMessage BanPlayerFromGame(int moderatorID, string password, int gameID, string playerToBan)
         {
             RequestValidators validator = new RequestValidators();
