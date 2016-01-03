@@ -421,6 +421,8 @@ namespace Assassination.Helpers
                 });
             }
 
+            
+
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
 
@@ -491,6 +493,18 @@ namespace Assassination.Helpers
                 return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
                 {
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That game has already started" }).ToString(), Encoding.UTF8, "application/json")
+                });
+            }
+
+            bool isModerator = (from check in db.AllPlayerGames
+                                where check.PlayerID == playerID && check.GameID == gameID
+                                select check.IsModerator).FirstOrDefault();
+
+            if (isModerator)
+            {
+                return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "The moderator cannot leave. Please cancel the game, instead." }).ToString(), Encoding.UTF8, "application/json")
                 });
             }
 
