@@ -8,7 +8,7 @@ using System.Web;
 
 namespace Assassination.WebsocketHandlers
 {
-    public class TeamGameWebSocketHandler : WebSocketHandler
+    public class TeamGameWebSocketHandler : GameWebSocketHandler
     {
         public int gameID { get; set; }
         public string playerName { get; set; }
@@ -18,7 +18,7 @@ namespace Assassination.WebsocketHandlers
         // <gameid<teamname<playername, location>>>
         private static Dictionary<int, Dictionary<string, Dictionary<string, double[]>>> locations = new Dictionary<int, Dictionary<string, Dictionary<string, double[]>>>();
 
-        public void setUpGroup()
+        public override void SetUpGroup()
         {
             if (!targets.ContainsKey(gameID))
             {
@@ -138,7 +138,7 @@ namespace Assassination.WebsocketHandlers
             }
         }
 
-        public Tuple<bool, Geocoordinate> GetPlayerLocation(int game, string player, string team)
+        public override Tuple<bool, Geocoordinate> GetPlayerLocation(int game, string player, string team)
         {
             if (locations.ContainsKey(game))
             {
@@ -159,6 +159,40 @@ namespace Assassination.WebsocketHandlers
             }
 
             return new Tuple<bool, Geocoordinate>(false, new Geocoordinate());
+        }
+
+        public override void KillPlayer(int gameID, string playerName)
+        {
+            if (!locations.ContainsKey(gameID))
+            {
+                return;
+            }
+
+            foreach(KeyValuePair<string, Dictionary<string, double[]>> entry in locations[gameID])
+            {
+                if (entry.Value.ContainsKey(playerName))
+                {
+                    entry.Value.Remove(playerName);
+                }
+            }
+        }
+
+        public override bool CheckIfAlive(int gameID, string playerName)
+        {
+            if (!locations.ContainsKey(gameID))
+            {
+                return false;
+            }
+
+            foreach (KeyValuePair<string, Dictionary<string, double[]>> entry in locations[gameID])
+            {
+                if (entry.Value.ContainsKey(playerName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

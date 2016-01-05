@@ -106,7 +106,7 @@ namespace Assassination.Controllers
             handler.gameID = gameID;
             handler.playerName = checkPlayer.UserName;
             handler.teamName = checkIfInGame.TeamName;
-            handler.setUpGroup();
+            handler.SetUpGroup();
             HttpContext.Current.AcceptWebSocketRequest(handler);
             return Request.CreateResponse(HttpStatusCode.SwitchingProtocols);
         }

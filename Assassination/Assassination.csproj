@@ -230,6 +230,7 @@
     <Compile Include="Models\TargetArchive.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebsocketHandlers\FreeForAllGameWebSocketHandler.cs" />
+    <Compile Include="WebsocketHandlers\GameWebSocketHandler.cs" />
     <Compile Include="WebsocketHandlers\IndividualTargetsGameWebSocketHandler.cs" />
     <Compile Include="WebsocketHandlers\TeamGameWebSocketHandler.cs" />
   </ItemGroup>

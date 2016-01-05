@@ -273,11 +273,19 @@ namespace Assassination.Controllers
             }
 
             Geocoordinate targetCoords = null;
+            GameWebSocketHandler handler = null;
 
             if (checkGame.GameType == GameType.FreeForAll)
             {
-                FreeForAllGameWebSocketHandler handler = new FreeForAllGameWebSocketHandler();
-                Tuple<bool, Geocoordinate> locationResults = handler.GetPlayerLocation(gameID, targetName);
+                handler = new FreeForAllGameWebSocketHandler();
+                if (!handler.CheckIfAlive(gameID, checkPlayer.UserName))
+                {
+                    return new HttpResponseMessage()
+                    {
+                        Content = new StringContent(JArray.FromObject(new List<String>() { "YOU ARE DEAD" }).ToString(), Encoding.UTF8, "application/json")
+                    };
+                }
+                Tuple<bool, Geocoordinate> locationResults = handler.GetPlayerLocation(gameID, null, targetName);
                 if (locationResults.Item1)
                 {
                     targetCoords = locationResults.Item2;
@@ -285,8 +293,15 @@ namespace Assassination.Controllers
             }
             else if (checkGame.GameType == GameType.IndividualTargets)
             {
-                IndividualTargetsGameWebSocketHandler handler = new IndividualTargetsGameWebSocketHandler();
-                Tuple<bool, Geocoordinate> locationResults = handler.GetPlayerLocation(gameID, targetName);
+                handler = new IndividualTargetsGameWebSocketHandler();
+                if (!handler.CheckIfAlive(gameID, checkPlayer.UserName))
+                {
+                    return new HttpResponseMessage()
+                    {
+                        Content = new StringContent(JArray.FromObject(new List<String>() { "YOU ARE DEAD" }).ToString(), Encoding.UTF8, "application/json")
+                    };
+                }
+                Tuple<bool, Geocoordinate> locationResults = handler.GetPlayerLocation(gameID, null, targetName);
                 if (locationResults.Item1)
                 {
                     targetCoords = locationResults.Item2;
@@ -294,7 +309,14 @@ namespace Assassination.Controllers
             }
             else if (checkGame.GameType == GameType.Team)
             {
-                TeamGameWebSocketHandler handler = new TeamGameWebSocketHandler();
+                handler = new TeamGameWebSocketHandler();
+                if (!handler.CheckIfAlive(gameID, checkPlayer.UserName))
+                {
+                    return new HttpResponseMessage()
+                    {
+                        Content = new StringContent(JArray.FromObject(new List<String>() { "YOU ARE DEAD" }).ToString(), Encoding.UTF8, "application/json")
+                    };
+                }
                 string killerTeam = checkIfInGame.TeamName;
                 string targetTeam = (from check in db.AllPlayerGames
                                      where check.PlayerID == checkTarget.TargetID && check.GameID == gameID
@@ -338,9 +360,9 @@ namespace Assassination.Controllers
                 };
             }
 
-            var targetLocation = (from check in db.AllPlayerGames
+            /*var targetLocation = (from check in db.AllPlayerGames
                                  where check.GameID == gameID && check.PlayerID == checkTarget.TargetID
-                                 select new { lat = check.Latitude, longi = check.Longitude, alt = check.Altitude }).FirstOrDefault();
+                                 select new { lat = check.Latitude, longi = check.Longitude, alt = check.Altitude }).FirstOrDefault();*/
             //Geocoordinate targetCoords = new Geocoordinate(targetLocation.lat, targetLocation.longi);
             if (targetCoords.Altitude == 0 || coords.Altitude == 0.0)
             {
@@ -359,6 +381,8 @@ namespace Assassination.Controllers
                     Content = new StringContent(JArray.FromObject(new List<String>() { "You are too far away" }).ToString(), Encoding.UTF8, "application/json")
                 };
             }
+
+            handler.KillPlayer(gameID, targetName);
 
             PlayerGame update = (from check in db.AllPlayerGames
                                  where check.GameID == gameID && check.PlayerID == checkTarget.TargetID

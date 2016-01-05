@@ -19,7 +19,7 @@ namespace Assassination.Controllers
         AssassinationContext db = new AssassinationContext();
 
         [HttpGet]
-        public HttpResponseMessage JoinGame([FromBody] Geocoordinate location, int gameID, int playerID, string password)
+        public HttpResponseMessage JoinGame(int gameID, int playerID, string password)
         {
             RequestValidators validator = new RequestValidators();
 
@@ -102,7 +102,7 @@ namespace Assassination.Controllers
             handler.userName = (from check in db.AllPlayers
                                 where check.ID == playerID
                                 select check.UserName).FirstOrDefault();
-            handler.setUpGroup();
+            handler.SetUpGroup();
             HttpContext.Current.AcceptWebSocketRequest(handler);
             return Request.CreateResponse(HttpStatusCode.SwitchingProtocols);
         }

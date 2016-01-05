@@ -9,7 +9,7 @@ using Assassination.Models;
 
 namespace Assassination.WebsocketHandlers
 {
-    public class FreeForAllGameWebSocketHandler : WebSocketHandler
+    public class FreeForAllGameWebSocketHandler : GameWebSocketHandler
      {
          public int gameID { get; set; }
          private static Dictionary<int, WebSocketCollection> clients = new Dictionary<int, WebSocketCollection>();
@@ -17,7 +17,7 @@ namespace Assassination.WebsocketHandlers
          private static Dictionary<int, Dictionary<string, double[]>> locations = new Dictionary<int, Dictionary<string, double[]>>();
          public string userName { get; set; }
  
-         public void setUpGroup()
+         public override void SetUpGroup()
          {
              if (!clients.ContainsKey(gameID))
              {
@@ -108,7 +108,7 @@ namespace Assassination.WebsocketHandlers
              }
          }
 
-         public Tuple<bool, Geocoordinate> GetPlayerLocation(int game, string playerName)
+         public override Tuple<bool, Geocoordinate> GetPlayerLocation(int game, string teamName, string playerName)
          {
              if(locations.ContainsKey(game))
              {
@@ -126,6 +126,36 @@ namespace Assassination.WebsocketHandlers
              }
 
              return new Tuple<bool, Geocoordinate>(false, new Geocoordinate());
+         }
+
+         public override void KillPlayer(int gameID, string playerName)
+         {
+             if (!locations.ContainsKey(gameID))
+             {
+                 return;
+             }
+
+             if (!locations[gameID].ContainsKey(playerName))
+             {
+                 return;
+             }
+
+             locations[gameID].Remove(playerName);
+         }
+
+         public override bool CheckIfAlive(int gameID, string playerName)
+         {
+             if (!locations.ContainsKey(gameID))
+             {
+                 return false;
+             }
+
+             if (!locations[gameID].ContainsKey(playerName))
+             {
+                 return false;
+             }
+
+             return true;
          }
     }
 }
