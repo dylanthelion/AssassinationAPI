@@ -13,6 +13,7 @@ namespace Assassination.WebsocketHandlers
         public int gameID { get; set; }
         public string playerName { get; set; }
         public string teamName { get; set; }
+        public static Dictionary<int, List<string>> DeadPlayers { get; set; }
         // <gameid<teamname, clients>>>
         private static Dictionary<int, Dictionary<string, WebSocketCollection>> targets = new Dictionary<int, Dictionary<string, WebSocketCollection>>();
         // <gameid<teamname<playername, location>>>
@@ -33,6 +34,16 @@ namespace Assassination.WebsocketHandlers
             if (!locations[gameID].ContainsKey(teamName))
             {
                 locations[gameID] = new Dictionary<string, Dictionary<string, double[]>>();
+            }
+
+            if (!DeadPlayers.ContainsKey(gameID))
+            {
+                DeadPlayers[gameID] = new List<string>();
+            }
+
+            if (DeadPlayers[gameID].Contains(playerName))
+            {
+                return;
             }
 
             if (!locations[gameID][teamName].ContainsKey(playerName))
@@ -175,11 +186,28 @@ namespace Assassination.WebsocketHandlers
                     entry.Value.Remove(playerName);
                 }
             }
+
+            if (!DeadPlayers.ContainsKey(gameID))
+            {
+                DeadPlayers[gameID] = new List<string>();
+            }
+
+            DeadPlayers[gameID].Add(playerName);
         }
 
         public override bool CheckIfAlive(int gameID, string playerName)
         {
             if (!locations.ContainsKey(gameID))
+            {
+                return false;
+            }
+
+            if (!DeadPlayers.ContainsKey(gameID))
+            {
+                return false;
+            }
+
+            if (DeadPlayers[gameID].Contains(playerName))
             {
                 return false;
             }

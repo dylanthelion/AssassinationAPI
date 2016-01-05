@@ -12,6 +12,7 @@ namespace Assassination.WebsocketHandlers
     public class FreeForAllGameWebSocketHandler : GameWebSocketHandler
      {
          public int gameID { get; set; }
+         public static Dictionary<int, List<string>> DeadPlayers { get; set; }
          private static Dictionary<int, WebSocketCollection> clients = new Dictionary<int, WebSocketCollection>();
         // gameID, playername
          private static Dictionary<int, Dictionary<string, double[]>> locations = new Dictionary<int, Dictionary<string, double[]>>();
@@ -19,6 +20,10 @@ namespace Assassination.WebsocketHandlers
  
          public override void SetUpGroup()
          {
+             if(DeadPlayers == null)
+             {
+                 DeadPlayers = new Dictionary<int, List<string>>();
+             }
              if (!clients.ContainsKey(gameID))
              {
                  clients[gameID] = new WebSocketCollection();
@@ -29,11 +34,23 @@ namespace Assassination.WebsocketHandlers
                  locations[gameID] = new Dictionary<string, double[]>();
              }
 
+             if (!DeadPlayers.ContainsKey(gameID))
+             {
+                 DeadPlayers[gameID] = new List<string>();
+             }
+
+             if(DeadPlayers[gameID].Contains(userName))
+             {
+                 return;
+             }
+
              if (!locations[gameID].ContainsKey(userName))
              {
                  locations[gameID][userName] = new double[3];
                  locations[gameID][userName][2] = 0;
              }
+
+             
          }
  
          public override void OnOpen()
@@ -141,6 +158,13 @@ namespace Assassination.WebsocketHandlers
              }
 
              locations[gameID].Remove(playerName);
+
+             if (!DeadPlayers.ContainsKey(gameID))
+             {
+                 DeadPlayers[gameID] = new List<string>();
+             }
+
+             DeadPlayers[gameID].Add(playerName);
          }
 
          public override bool CheckIfAlive(int gameID, string playerName)
@@ -151,6 +175,16 @@ namespace Assassination.WebsocketHandlers
              }
 
              if (!locations[gameID].ContainsKey(playerName))
+             {
+                 return false;
+             }
+
+             if (!DeadPlayers.ContainsKey(gameID))
+             {
+                 return false;
+             }
+
+             if (DeadPlayers[gameID].Contains(playerName))
              {
                  return false;
              }

@@ -9,6 +9,7 @@ namespace Assassination.WebsocketHandlers
 {
     public abstract class GameWebSocketHandler : WebSocketHandler
     {
+        
         public abstract Tuple<bool, Geocoordinate> GetPlayerLocation(int game, string teamName, string playerName);
 
         public abstract void SetUpGroup();
