@@ -21,18 +21,18 @@ namespace Assassination.Models
 
         // Server-specific account stats
 
-        [DefaultValue(Constants.DEFAULTMAXPLAYERS)]
+        [DefaultValue(5)]
         public int MaxPlayers { get; set; }
-        [DefaultValue(Constants.DEFAULTMAXTEAMS)]
+        [DefaultValue(2)]
         public int MaxTeams { get; set; }
-        [DefaultValue(Constants.DEFAULTMAXGAMERADIUS)]
+        [DefaultValue(1500.0)]
         public float MaxRadiusInMeters { get; set; }
-        [DefaultValue(Constants.DEFAULTMAXGAMESPERWEEK)]
+        [DefaultValue(3)]
         public int MaxGamesPerWeek { get; set; }
         public int Experience { get; set; }
-        [DefaultValue(Constants.DEFAULTMAXKILLRADIUS)]
+        [DefaultValue(10.0)]
         public float MaxKillRadiusInMeters { get; set; }
-        [DefaultValue(Constants.DEFAULTMAXGAMELENGTH)]
+        [DefaultValue(45)]
         public int MaxGameLengthInMinutes { get; set; }
 
         public Account(Player p) : this()

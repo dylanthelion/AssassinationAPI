@@ -1,4 +1,3 @@
-C:\Users\Administrator\Desktop\C\Assassination\Assassination\obj\Debug\Assassination.csprojResolveAssemblyReference.cache
 C:\Users\Administrator\Desktop\C\Assassination\Assassination\bin\Assassination.dll
 C:\Users\Administrator\Desktop\C\Assassination\Assassination\bin\Assassination.pdb
 C:\Users\Administrator\Desktop\C\Assassination\Assassination\bin\Antlr3.Runtime.dll

@@ -96,14 +96,14 @@ namespace Assassination.Migrations
                 context.Entry(a).State = EntityState.Modified;
             }
 
-            foreach (Player p in context.AllPlayers)
+            /*foreach (Player p in context.AllPlayers)
             {
                 if (p.Password == "")
                 {
                     p.Password = "test1test1";
                     context.Entry(p).State = EntityState.Modified;
                 }
-            }
+            }*/
 
             context.SaveChanges();
         }
