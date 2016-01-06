@@ -433,6 +433,11 @@ namespace Assassination.Controllers
                 }
             }
 
+            if ((DateTime.Now - checkGame.StartTime).Minutes >= checkGame.GameLengthInMinutes)
+            {
+                endGame = true;
+            }
+
             if (endGame)
             {
                 new Archiver().ArchiveGame(gameID, db);

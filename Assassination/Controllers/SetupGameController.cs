@@ -178,6 +178,10 @@ namespace Assassination.Controllers
 
             checkGame.IsActiveGame = true;
             checkGame.StartTime = DateTime.Now;
+            if (checkGame.GameLengthInMinutes == 0)
+            {
+                checkGame.GameLengthInMinutes = (checkAccount.MaxGameLengthInMinutes > 0) ? checkAccount.MaxGameLengthInMinutes : 30;
+            }
             db.Entry(checkGame).State = EntityState.Modified;
             db.SaveChanges();
 

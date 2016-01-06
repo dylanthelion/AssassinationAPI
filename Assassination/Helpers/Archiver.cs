@@ -50,7 +50,7 @@ namespace Assassination.Helpers
                 db.AllPlayerGameArchives.Add(pga);
                 if (allPlayerGames[i].Alive)
                 {
-                    stats[i].Experience += 3;
+                    stats[i].Experience += 2;
                 }
                 else
                 {
