@@ -28,61 +28,6 @@ namespace Assassination.Controllers
                 return inGameValidator.Item2;
             }
 
-            //Player checkPlayer = db.AllPlayers.Find(playerID);
-
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            Game checkGame = db.AllGames.Find(gameID);
-
-            if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkGame.IsActiveGame == false)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            PlayerGame checkIfInGame = (from check in db.AllPlayerGames
-                                        where check.PlayerID == playerID && check.GameID == gameID
-                                        select check).FirstOrDefault();
-            if (checkIfInGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (!checkIfInGame.Alive)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are dead" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             JObject results = new JObject();
 
             List<String> Targets = (from check in db.AllPlayers
@@ -121,60 +66,9 @@ namespace Assassination.Controllers
                 };
             }
 
-            /*Player checkPlayer = db.AllPlayers.Find(playerID);
-
-            if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            Game checkGame = db.AllGames.Find(gameID);
-
-            if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkGame.IsActiveGame == false)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             PlayerGame checkIfInGame = (from check in db.AllPlayerGames
                                         where check.PlayerID == playerID && check.GameID == gameID
                                         select check).FirstOrDefault();
-            /*if (checkIfInGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (!checkIfInGame.Alive)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are dead" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             checkIfInGame.Latitude = coords.Latitude;
             checkIfInGame.Longitude = coords.Longitude;
@@ -207,58 +101,11 @@ namespace Assassination.Controllers
 
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             Game checkGame = db.AllGames.Find(gameID);
-
-            /*if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkGame.IsActiveGame == false)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             PlayerGame checkIfInGame = (from check in db.AllPlayerGames
                                         where check.PlayerID == playerID && check.GameID == gameID
                                         select check).FirstOrDefault();
-            /*if (checkIfInGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (!checkIfInGame.Alive)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are dead" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             Target checkTarget = (from check in db.AllTargets
                                   join player in db.AllPlayers on check.TargetID equals player.ID
@@ -360,14 +207,18 @@ namespace Assassination.Controllers
                 };
             }
 
-            /*var targetLocation = (from check in db.AllPlayerGames
-                                 where check.GameID == gameID && check.PlayerID == checkTarget.TargetID
-                                 select new { lat = check.Latitude, longi = check.Longitude, alt = check.Altitude }).FirstOrDefault();*/
-            //Geocoordinate targetCoords = new Geocoordinate(targetLocation.lat, targetLocation.longi);
             if (targetCoords.Altitude == 0 || coords.Altitude == 0.0)
             {
                 targetCoords.Altitude = 0;
                 coords.Altitude = 0;
+            }
+
+            if (targetCoords.Latitude == 0 && targetCoords.Longitude == 0 && targetCoords.Altitude == 0)
+            {
+                return new HttpResponseMessage()
+                {
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "That player has not logged in yet." }).ToString(), Encoding.UTF8, "application/json")
+                };
             }
 
             float killDistance = (from check in db.AllAccounts
@@ -441,75 +292,7 @@ namespace Assassination.Controllers
             if (endGame)
             {
                 new Archiver().ArchiveGame(gameID, db);
-                /*PlayerGame[] allPlayerGames = (from check in db.AllPlayerGames
-                                                   where check.GameID == gameID
-                                                   orderby check.PlayerID
-                                                   select check).ToArray();
-                List<Target> allKills = (from check in db.AllTargets
-                                           join playerGame in db.AllPlayerGames on check.PlayerGameID equals playerGame.ID
-                                           where playerGame.GameID == gameID
-                                           select check).ToList();
-                AccountArchive[] allAccounts = (from check in db.AllAccountArchives
-                                                    join map in db.AppAccountArchiveMap on check.ID equals map.AccountArchiveID
-                                                    join players in db.AllPlayers on map.PlayerID equals players.ID
-                                                    join playerGames in db.AllPlayerGames on players.ID equals playerGames.PlayerID
-                                                    where playerGames.GameID == gameID
-                                                    orderby players.ID
-                                                    select check).ToArray();
-                Account[] stats = (from check in db.AllAccounts
-                                  join players in db.AllPlayers on check.PlayerID equals players.ID
-                                  join playerGames in db.AllPlayerGames on players.ID equals playerGames.PlayerID
-                                                    where playerGames.GameID == gameID
-                                                    orderby players.ID
-                                                    select check).ToArray();
-                GameArchive ga = new GameArchive();
-                Geocoordinate gameLocation = (from check in db.AllGameCoords
-                                              join games in db.AllGames on check.ID equals games.LocationID
-                                              select check).FirstOrDefault();
-                db.AllGameCoords.Remove(gameLocation);
-                db.Entry(gameLocation).State = EntityState.Deleted;
-                db.AllGames.Remove(checkGame);
-                db.Entry(checkGame).State = EntityState.Deleted;
-                ga.EndTime = DateTime.Now;
-                db.AllGameArchives.Add(ga);
-
-                for (int i = 0; i < allPlayerGames.Length; i++)
-                {
-                    PlayerGameArchive pga = new PlayerGameArchive(allAccounts[i], ga, allPlayerGames[i]);
-                    db.AllPlayerGameArchives.Add(pga);
-                    if (allPlayerGames[i].Alive)
-                    {
-                        stats[i].Experience += 3;
-                    }
-                    else
-                    {
-                        stats[i].Experience += 1;
-                    }
-                    foreach (Target t in allKills)
-                    {
-                        if (t.PlayerGameID == allPlayerGames[i].ID)
-                        {
-                            AccountArchive killed = (from check in db.AllAccountArchives
-                                                    join map in db.AppAccountArchiveMap on check.ID equals map.AccountArchiveID
-                                                    join allPlayers in db.AllPlayers on map.PlayerID equals allPlayers.ID
-                                                    where allPlayers.ID == t.TargetID
-                                                    select check).FirstOrDefault();
-                            TargetArchive ta = new TargetArchive(pga, killed, t);
-                            db.AllTargetArchives.Add(ta);
-                            stats[i].Experience += 1;
-                        }
-                    }
-
-                    db.AllPlayerGames.Remove(allPlayerGames[i]);
-                    db.Entry(allPlayerGames[i]).State = EntityState.Deleted;
-                    db.Entry(stats[i]).State = EntityState.Modified;
-                }
-
-                foreach (Target t in allKills)
-                {
-                    db.AllTargets.Remove(t);
-                    db.Entry(t).State = EntityState.Deleted;
-                }*/
+                
 
                 db.SaveChanges();
                 return new HttpResponseMessage()

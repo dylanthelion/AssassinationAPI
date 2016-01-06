@@ -29,39 +29,6 @@ namespace Assassination.Controllers
                 };
             }
 
-            /*Player checkForUniqueName = (from check in db.AllPlayers
-                                         where check.UserName == player.UserName
-                                         select check).FirstOrDefault();
-            if (checkForUniqueName != null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Username already taken" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            Player checkForUniqueEmail = (from check in db.AllPlayers
-                                         where check.Email == player.Email
-                                         select check).FirstOrDefault();
-            if (checkForUniqueEmail != null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Email address already taken" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            Device checkForUniqueDevice = (from check in db.AllDevices
-                                           where check.UUID == UUID
-                                           select check).FirstOrDefault();
-            if (checkForUniqueDevice != null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Device already has an account attached to it" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             RequestValidators validator = new RequestValidators();
 
             Tuple<bool, HttpResponseMessage> playerValidator = validator.ValidateNewPlayer(player.UserName, player.Email, UUID);
@@ -108,21 +75,6 @@ namespace Assassination.Controllers
             Debug.WriteLine("Name: " + player.UserName);
 
             Player checkPlayer = db.AllPlayers.Find(id);
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid user ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != player.Password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             RequestValidators validator = new RequestValidators();
 
@@ -140,16 +92,6 @@ namespace Assassination.Controllers
                 {
                     return nameValidator.Item2;
                 }
-                /*Player checkForUniqueName = (from check in db.AllPlayers
-                                             where check.UserName == player.UserName
-                                             select check).FirstOrDefault();
-                if (checkForUniqueName != null)
-                {
-                    return new HttpResponseMessage()
-                    {
-                        Content = new StringContent(JArray.FromObject(new List<String>() { "Username already taken" }).ToString(), Encoding.UTF8, "application/json")
-                    };
-                }*/
                 else
                 {
                     checkPlayer.UserName = player.UserName;
@@ -164,16 +106,6 @@ namespace Assassination.Controllers
                 {
                     return emailValidator.Item2;
                 }
-                /*Player checkForUniqueEmail = (from check in db.AllPlayers
-                                              where check.Email == player.Email
-                                              select check).FirstOrDefault();
-                if (checkForUniqueEmail != null)
-                {
-                    return new HttpResponseMessage()
-                    {
-                        Content = new StringContent(JArray.FromObject(new List<String>() { "Email address already taken" }).ToString(), Encoding.UTF8, "application/json")
-                    };
-                }*/
                 else
                 {
                     checkPlayer.Email = player.Email;
@@ -202,30 +134,6 @@ namespace Assassination.Controllers
 
 
             Player checkPlayer = db.AllPlayers.Find(playerID);
-
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid user ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Email != email)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid email" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid pasword" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             Account a = (from check in db.AllAccounts
                          where check.PlayerID == playerID

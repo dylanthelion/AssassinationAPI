@@ -28,41 +28,7 @@ namespace Assassination.Controllers
             {
                 return aliveValidator.Item2;
             }
-            //Player checkPlayer = db.AllPlayers.Find(playerID);
-
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
             
-
-            if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (!checkGame.IsActiveGame)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started, yet" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             Game checkGame = db.AllGames.Find(gameID);
 
@@ -74,28 +40,7 @@ namespace Assassination.Controllers
                 };
             }
 
-            /*PlayerGame checkIfInGame = (from check in db.AllPlayerGames
-                                        where check.PlayerID == playerID && check.GameID == gameID
-                                        select check).FirstOrDefault();
-
-            if (checkIfInGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (!checkIfInGame.Alive)
-            {
-                if (checkGame.GameType != GameType.Team)
-                {
-                    return new HttpResponseMessage()
-                    {
-                        Content = new StringContent(JArray.FromObject(new List<String>() { "YOU ARE DEAD" }).ToString(), Encoding.UTF8, "application/json")
-                    };
-                }
-            }*/
+            
 
             FreeForAllGameWebSocketHandler handler = new FreeForAllGameWebSocketHandler();
             handler.gameID = gameID;

@@ -47,61 +47,7 @@ namespace Assassination.Controllers
 
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             Game checkGame = db.AllGames.Find(gameID);
-
-            /*if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkGame.IsActiveGame == true)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has already started" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            PlayerGame checkIfInGame = (from check in db.AllPlayerGames
-                                        where check.PlayerID == playerID && check.GameID == gameID
-                                        select check).FirstOrDefault();
-            if (checkIfInGame != null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are already in that game" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            int playersInGame = (from check in db.AllPlayerGames
-                                 where check.GameID == gameID
-                                 select check).ToList().Count;
-            if (playersInGame >= checkGame.NumberOfPlayers)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game is full" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             PlayerGame pg = new PlayerGame(checkPlayer, checkGame);
             db.AllPlayerGames.Add(pg);
@@ -124,61 +70,9 @@ namespace Assassination.Controllers
                 return leaveValidator.Item2;
             }
 
-            /*Player checkPlayer = db.AllPlayers.Find(playerID);
-
-            if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            Game checkGame = db.AllGames.Find(gameID);
-
-            if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkGame.IsActiveGame)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has already started" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             PlayerGame checkPlayerGame = (from check in db.AllPlayerGames
                                           where check.PlayerID == playerID && check.GameID == gameID
                                           select check).FirstOrDefault();
-
-            /*if (checkPlayerGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayerGame.IsModerator)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "The moderator cannot leave. Please cancel the game, instead." }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             db.AllPlayerGames.Remove(checkPlayerGame);
             db.Entry(checkPlayerGame).State = EntityState.Deleted;

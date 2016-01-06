@@ -40,30 +40,6 @@ namespace Assassination.Controllers
                 return deviceValidator.Item2;
             }
 
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid user name" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkDevice != null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Device is already attached to an account" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             Device d = new Device(checkPlayer, UUID);
             db.AllDevices.Add(d);
             db.SaveChanges();
@@ -77,8 +53,6 @@ namespace Assassination.Controllers
         [HttpDelete]
         public HttpResponseMessage RemoveDevice(int playerID, string password, string UUID)
         {
-            //Player checkPlayer = db.AllPlayers.Find(playerID);
-
             Device checkDevice = (from check in db.AllDevices
                                   where check.UUID == UUID
                                   select check).FirstOrDefault();
@@ -90,30 +64,6 @@ namespace Assassination.Controllers
             {
                 return deviceValidator.Item2;
             }
-
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid user ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkDevice == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid device ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             db.AllDevices.Remove(checkDevice);
             db.Entry(checkDevice).State = EntityState.Deleted;

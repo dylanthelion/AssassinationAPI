@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assassination.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -25,7 +26,7 @@ namespace Assassination.Models
         public DateTime StartTime { get; set; }
         [DefaultValue(false)]
         public bool IsActiveGame { get; set; }
-        [DefaultValue(45)]
+        [DefaultValue(Constants.DEFAULTMAXGAMELENGTH)]
         public int GameLengthInMinutes { get; set; }
         public GameType GameType { get; set; }
 

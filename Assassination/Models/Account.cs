@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assassination.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -20,18 +21,18 @@ namespace Assassination.Models
 
         // Server-specific account stats
 
-        [DefaultValue(5)]
+        [DefaultValue(Constants.DEFAULTMAXPLAYERS)]
         public int MaxPlayers { get; set; }
-        [DefaultValue(2)]
+        [DefaultValue(Constants.DEFAULTMAXTEAMS)]
         public int MaxTeams { get; set; }
-        [DefaultValue(1500.0)]
+        [DefaultValue(Constants.DEFAULTMAXGAMERADIUS)]
         public float MaxRadiusInMeters { get; set; }
-        [DefaultValue(3)]
+        [DefaultValue(Constants.DEFAULTMAXGAMESPERWEEK)]
         public int MaxGamesPerWeek { get; set; }
         public int Experience { get; set; }
-        [DefaultValue(10.0)]
+        [DefaultValue(Constants.DEFAULTMAXKILLRADIUS)]
         public float MaxKillRadiusInMeters { get; set; }
-        [DefaultValue(45)]
+        [DefaultValue(Constants.DEFAULTMAXGAMELENGTH)]
         public int MaxGameLengthInMinutes { get; set; }
 
         public Account(Player p) : this()
@@ -41,12 +42,12 @@ namespace Assassination.Models
 
         public Account()
         {
-            MaxGameLengthInMinutes = 45;
-            MaxGamesPerWeek = 3;
-            MaxKillRadiusInMeters = 10;
-            MaxPlayers = 5;
-            MaxRadiusInMeters = 1500;
-            MaxTeams = 2;
+            MaxGameLengthInMinutes = Constants.DEFAULTMAXGAMELENGTH;
+            MaxGamesPerWeek = Constants.DEFAULTMAXGAMESPERWEEK;
+            MaxKillRadiusInMeters = Constants.DEFAULTMAXKILLRADIUS;
+            MaxPlayers = Constants.DEFAULTMAXPLAYERS;
+            MaxRadiusInMeters = Constants.DEFAULTMAXGAMERADIUS;
+            MaxTeams = Constants.DEFAULTMAXTEAMS;
         }
     }
 }

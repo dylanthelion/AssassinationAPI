@@ -38,22 +38,6 @@ namespace Assassination.Controllers
 
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             Account accountDetails = (from check in db.AllAccounts
                                       where check.PlayerID == playerID
                                       select check).FirstOrDefault();
@@ -73,9 +57,6 @@ namespace Assassination.Controllers
 
             gamesThisWeek += currentGames;
 
-            //Debug.WriteLine("Games this week: " + gamesThisWeek.ToString());
-            //Debug.WriteLine("Max Games: " + accountDetails.MaxGamesPerWeek.ToString());
-
             if (gamesThisWeek >= accountDetails.MaxGamesPerWeek)
             {
                 return new HttpResponseMessage()
@@ -83,14 +64,6 @@ namespace Assassination.Controllers
                     Content = new StringContent(JArray.FromObject(new List<String>() { String.Format("You are only allowed {0} games per week", accountDetails.MaxGamesPerWeek.ToString()) }).ToString(), Encoding.UTF8, "application/json")
                 };
             }
-
-            /*if (accountDetails == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Something went wrong. You don't have an account set up." }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             Game g = new Game(game.LocationDescription);
 
@@ -127,7 +100,7 @@ namespace Assassination.Controllers
 
             if(game.RadiusInMeters == 0)
             {
-                g.RadiusInMeters = 500;
+                g.RadiusInMeters = Constants.DEFAULTMAXGAMERADIUS;
             }
             else if (game.RadiusInMeters > accountDetails.MaxRadiusInMeters)
             {
@@ -140,7 +113,7 @@ namespace Assassination.Controllers
 
             if(game.GameLengthInMinutes == 0)
             {
-                g.GameLengthInMinutes = 45;
+                g.GameLengthInMinutes = Constants.DEFAULTMAXGAMELENGTH;
             }
             else if (game.GameLengthInMinutes > accountDetails.MaxGameLengthInMinutes)
             {
@@ -194,8 +167,6 @@ namespace Assassination.Controllers
                 };
             }
 
-            //Player checkPlayer = db.AllPlayers.Find(playerID);
-            //Debug.WriteLine("ID: " + gameID);
             Game checkGame = db.AllGames.Find(gameID);
 
             RequestValidators validator = new RequestValidators();
@@ -206,41 +177,9 @@ namespace Assassination.Controllers
                 return moderatorValidator.Item2;
             }
 
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             Account accountDetails = (from check in db.AllAccounts
                                       where check.PlayerID == playerID
                                       select check).FirstOrDefault();
-
-            /*if (accountDetails == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Something went wrong. You don't have an account set up." }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             Geocoordinate coord = null;
 
@@ -321,41 +260,6 @@ namespace Assassination.Controllers
                 return moderatorValidator.Item2;
             }
 
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            bool checkPG = (from check in db.AllPlayerGames
-                            where check.PlayerID == playerID && check.GameID == gameID
-                            select check.IsModerator).FirstOrDefault();
-            if (!checkPG)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not the moderator of that game" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             List<PlayerGame> allPG = (from check in db.AllPlayerGames
                                       where check.GameID == gameID
                                       select check).ToList();
@@ -380,13 +284,6 @@ namespace Assassination.Controllers
         public HttpResponseMessage GetGame(int gameID)
         {
             Game checkGame = db.AllGames.Find(gameID);
-            /*if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             RequestValidators validator = new RequestValidators();
 
@@ -404,6 +301,10 @@ namespace Assassination.Controllers
             int numberOfPlayers = (from check in db.AllPlayerGames
                                    where check.GameID == gameID
                                    select check).ToList().Count;
+            List<string> allPlayers = (from check in db.AllPlayerGames
+                                       join player in db.AllPlayers on check.PlayerID equals player.ID
+                                       where check.GameID == gameID
+                                       select player.UserName).ToList();
             int maxPlayers = checkGame.NumberOfPlayers;
             string location = checkGame.LocationDescription;
             if (checkGame.GameType != 0)
@@ -424,6 +325,7 @@ namespace Assassination.Controllers
             results.Add("Location", location);
             results.Add("Joined", numberOfPlayers.ToString());
             results.Add("Needed", maxPlayers.ToString());
+            results.Add("Players", JArray.FromObject(allPlayers));
 
             return new HttpResponseMessage()
             {

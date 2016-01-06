@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -15,16 +16,6 @@ namespace Assassination.Helpers
 
         public Tuple<bool, HttpResponseMessage> ValidateNewPlayer(string userName, string email, string UUID)
         {
-            /*Player checkForUniqueName = (from check in db.AllPlayers
-                                         where check.UserName == userName
-                                         select check).FirstOrDefault();
-            if (checkForUniqueName != null)
-            {
-                return new Tuple<bool,HttpResponseMessage>(true, new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Username already taken" }).ToString(), Encoding.UTF8, "application/json")
-                });
-            }*/
 
             Tuple<bool, HttpResponseMessage> nameValidator = CheckForUniqueName(userName);
 
@@ -40,33 +31,11 @@ namespace Assassination.Helpers
                 return emailValidator;
             }
 
-            /*Player checkForUniqueEmail = (from check in db.AllPlayers
-                                          where check.Email == email
-                                          select check).FirstOrDefault();
-            if (checkForUniqueEmail != null)
-            {
-                return new Tuple<bool,HttpResponseMessage>(true, new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Email address already taken" }).ToString(), Encoding.UTF8, "application/json")
-                });
-            }*/
-
             Tuple<bool, HttpResponseMessage> deviceValidator = CheckForUniqueDevice(UUID);
             if (deviceValidator.Item1)
             {
                 return deviceValidator;
             }
-
-            /*Device checkForUniqueDevice = (from check in db.AllDevices
-                                           where check.UUID == UUID
-                                           select check).FirstOrDefault();
-            if (checkForUniqueDevice != null)
-            {
-                return new Tuple<bool,HttpResponseMessage>(true, new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Device already has an account attached to it" }).ToString(), Encoding.UTF8, "application/json")
-                });
-            }*/
 
             return new Tuple<bool, HttpResponseMessage>(false, new HttpResponseMessage());
         }
@@ -299,6 +268,10 @@ namespace Assassination.Helpers
             bool checkAlive = (from check in db.AllPlayerGames
                                where check.GameID == gameID && check.PlayerID == playerID
                                select check.Alive).FirstOrDefault();
+            PlayerGame test = (from check in db.AllPlayerGames
+                               where check.GameID == gameID && check.PlayerID == playerID
+                               select check).FirstOrDefault();
+            Debug.WriteLine(test.Alive);
             if (!checkAlive)
             {
                 return new Tuple<bool, HttpResponseMessage>(true, new HttpResponseMessage()

@@ -184,11 +184,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Archiver.cs" />
+    <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\ListExtension.cs" />
     <Compile Include="Helpers\RandomExtension.cs" />
     <Compile Include="Helpers\RegexUtilities.cs" />
     <Compile Include="Helpers\RequestValidators.cs" />
-    <Compile Include="Helpers\StringExtension.cs" />
     <Compile Include="Migrations\201512212013080_Initial.cs" />
     <Compile Include="Migrations\201512212013080_Initial.Designer.cs">
       <DependentUpon>201512212013080_Initial.cs</DependentUpon>
@@ -343,9 +343,6 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

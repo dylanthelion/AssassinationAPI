@@ -29,29 +29,13 @@ namespace Assassination.Controllers
             Game checkGame = db.AllGames.Find(gameID);
             Player checkPlayer = db.AllPlayers.Find(playerID);
 
-            /*if (checkPlayer == null)
+            if (checkGame.IsActiveGame)
             {
                 return new HttpResponseMessage()
                 {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
+                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has already been set up." }).ToString(), Encoding.UTF8, "application/json")
                 };
             }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             if (checkGame.GameType == GameType.Default)
             {
@@ -64,13 +48,6 @@ namespace Assassination.Controllers
             bool checkPG = (from check in db.AllPlayerGames
                             where check.PlayerID == playerID && check.GameID == gameID
                             select check.IsModerator).FirstOrDefault();
-            /*if (!checkPG)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not the moderator of that game" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             Account checkAccount = (from check in db.AllAccounts
                                     where check.PlayerID == playerID
@@ -181,6 +158,11 @@ namespace Assassination.Controllers
             if (checkGame.GameLengthInMinutes == 0)
             {
                 checkGame.GameLengthInMinutes = (checkAccount.MaxGameLengthInMinutes > 0) ? checkAccount.MaxGameLengthInMinutes : 30;
+            }
+            foreach (PlayerGame pg in players)
+            {
+                pg.Alive = true;
+                db.Entry(pg).State = EntityState.Modified;
             }
             db.Entry(checkGame).State = EntityState.Modified;
             db.SaveChanges();

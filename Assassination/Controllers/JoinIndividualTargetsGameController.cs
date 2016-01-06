@@ -31,39 +31,7 @@ namespace Assassination.Controllers
                 return aliveValidator.Item2;
             }
 
-            /*if (checkPlayer == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid player ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (checkPlayer.Password != password)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid password" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
-
             Game checkGame = db.AllGames.Find(gameID);
-
-            /*if (checkGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "Invalid game ID" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }
-
-            if (!checkGame.IsActiveGame)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not started, yet" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             if (checkGame.GameType != GameType.IndividualTargets)
             {
@@ -72,18 +40,6 @@ namespace Assassination.Controllers
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That is not an individual targets game" }).ToString(), Encoding.UTF8, "application/json")
                 };
             }
-
-            /*PlayerGame checkIfInGame = (from check in db.AllPlayerGames
-                                        where check.PlayerID == playerID && check.GameID == gameID
-                                        select check).FirstOrDefault();
-
-            if (checkIfInGame == null)
-            {
-                return new HttpResponseMessage()
-                {
-                    Content = new StringContent(JArray.FromObject(new List<String>() { "You are not in that game" }).ToString(), Encoding.UTF8, "application/json")
-                };
-            }*/
 
             String checkTarget = (from check in db.AllTargets
                                  join playerGames in db.AllPlayerGames on check.PlayerGameID equals playerGames.ID
@@ -98,17 +54,6 @@ namespace Assassination.Controllers
                     Content = new StringContent(JArray.FromObject(new List<String>() { "That game has not been set up yet." }).ToString(), Encoding.UTF8, "application/json")
                 };
             }
-
-            /*if (!checkIfInGame.Alive)
-            {
-                if (checkGame.GameType != GameType.Team)
-                {
-                    return new HttpResponseMessage()
-                    {
-                        Content = new StringContent(JArray.FromObject(new List<String>() { "YOU ARE DEAD" }).ToString(), Encoding.UTF8, "application/json")
-                    };
-                }
-            }*/
 
             
 
