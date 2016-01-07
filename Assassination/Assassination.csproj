@@ -173,6 +173,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DeviceController.cs" />
     <Compile Include="Controllers\GameController.cs" />
+    <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\JoinFreeForAllGameController.cs" />
     <Compile Include="Controllers\JoinIndividualTargetsGameController.cs" />
     <Compile Include="Controllers\JoinTeamGameController.cs" />
@@ -347,6 +348,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
