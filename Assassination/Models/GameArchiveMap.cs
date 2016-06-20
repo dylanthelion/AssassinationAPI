@@ -19,10 +19,14 @@ namespace Assassination.Models
         [ForeignKey("GameArchiveID")]
         public virtual GameArchive GameArchive { get; private set; }
 
-        public GameArchiveMap(Game g, GameArchive ga)
+        public GameArchiveMap(Game g, GameArchive ga) : this()
         {
             Game = g;
             GameArchive = ga;
+        }
+
+        public GameArchiveMap()
+        {
         }
     }
 }

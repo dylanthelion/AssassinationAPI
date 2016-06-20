@@ -20,11 +20,14 @@ namespace Assassination.Models
         public virtual AccountArchive Target { get; set; }
         public bool Killed { get; set; }
 
-        public TargetArchive(PlayerGameArchive pga, AccountArchive aa, Target t)
+        public TargetArchive(PlayerGameArchive pga, AccountArchive aa, Target t) : this()
         {
             PlayerGame = pga;
             Target = aa;
             Killed = t.Killed;
+        }
+        public TargetArchive()
+        {
         }
     }
 }
