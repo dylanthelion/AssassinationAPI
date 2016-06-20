@@ -15,9 +15,14 @@ namespace Assassination.Models
         [Required]
         public string UserName { get; set; }
 
-        public AccountArchive(Player p)
+        public AccountArchive(Player p) : this()
         {
             UserName = p.UserName;
+        }
+
+        public AccountArchive()
+        {
+
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Http;
 using Assassination.Helpers;
 using System.Data.Entity;
+using System.Diagnostics;
 
 namespace Assassination.Controllers
 {
@@ -77,6 +78,7 @@ namespace Assassination.Controllers
                         new Random().Shuffle(playersCopy);
                         for (int i = 0; i < players.Length; i++)
                         {
+                            Debug.WriteLine("Size: " + players.Length);
                             if (players[i].PlayerID == playersCopy[i].PlayerID)
                             {
                                 ready = false;

@@ -39,8 +39,8 @@ namespace Assassination.Controllers
                                        join pg in db.AllPlayerGames on check.ID equals pg.PlayerID
                                        where pg.Alive == true && pg.GameID == gameID && check.ID != playerID && !Targets.Contains(check.UserName)
                                        select check.UserName).ToList();
-            results.Add("Targets", JArray.FromObject(Targets.ToString()));
-            results.Add("NonTargets", JArray.FromObject(NonTargets.ToString()));
+            results.Add("Targets", JArray.FromObject(Targets));
+            results.Add("NonTargets", JArray.FromObject(NonTargets));
 
             return new HttpResponseMessage()
             {
@@ -91,7 +91,7 @@ namespace Assassination.Controllers
                 return aliveValidator.Item2;
             }
 
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || coords == null)
             {
                 return new HttpResponseMessage()
                 {
@@ -233,6 +233,17 @@ namespace Assassination.Controllers
                 };
             }
 
+            if (checkGame.GameType == GameType.IndividualTargets)
+            {
+                Player nextTarget = (from check in db.AllPlayers
+                                     join targetToDelete in db.AllTargets on check.ID equals targetToDelete.TargetID
+                                     join oldTargetPG in db.AllPlayerGames on targetToDelete.PlayerGameID equals oldTargetPG.ID
+                                     join deadPlayer in db.AllPlayers on oldTargetPG.PlayerID equals deadPlayer.ID
+                                     where deadPlayer.UserName == targetName
+                                     select check).FirstOrDefault();
+                Target newTarget = new Target(checkIfInGame, nextTarget);
+                db.AllTargets.Add(newTarget);
+            }
             handler.KillPlayer(gameID, targetName);
 
             PlayerGame update = (from check in db.AllPlayerGames
@@ -284,16 +295,16 @@ namespace Assassination.Controllers
                 }
             }
 
-            if ((DateTime.Now - checkGame.StartTime).Minutes >= checkGame.GameLengthInMinutes)
+            /*if ((DateTime.Now - checkGame.StartTime).Minutes >= checkGame.GameLengthInMinutes)
             {
                 endGame = true;
-            }
+            }*/
 
             if (endGame)
             {
                 new Archiver().ArchiveGame(gameID, db);
                 
-
+                
                 db.SaveChanges();
                 return new HttpResponseMessage()
                 {
